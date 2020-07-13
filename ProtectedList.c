@@ -17,7 +17,7 @@
 static pthread_mutex_t INlistLockMutex = PTHREAD_MUTEX_INITIALIZER; 
 static pthread_mutex_t OUTlistLockMutex = PTHREAD_MUTEX_INITIALIZER;
 
-static List* inputList; //= malloc(sizeof(List)); // a list for input messages (messages to be printed)
+static List* inputList;  // a list for input messages (messages to be printed)
 static List* outputList; // a list for output messages (messages to be sent)
 
 char* GetMessageFromInputList(void) // pops a message from the tail of the input list. protected
