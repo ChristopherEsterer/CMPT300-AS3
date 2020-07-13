@@ -17,8 +17,8 @@
 static pthread_mutex_t INlistLockMutex = PTHREAD_MUTEX_INITIALIZER; 
 static pthread_mutex_t OUTlistLockMutex = PTHREAD_MUTEX_INITIALIZER;
 
-static List inputList; // a list for input messages (messages to be printed)
-static List outputList; // a list for output messages (messages to be sent)
+static List* inputList; // a list for input messages (messages to be printed)
+static List* outputList; // a list for output messages (messages to be sent)
 
 char* GetMessageFromInputList(void) // pops a message from the tail of the input list. protected
 {
@@ -26,7 +26,7 @@ char* GetMessageFromInputList(void) // pops a message from the tail of the input
 
     pthread_mutex_lock(&INlistLockMutex); //lock Inputlist
     {
-        tempMsg = List_trim(&inputList); // returns the tail of the list and removes it
+        tempMsg = List_trim(inputList); // returns the tail of the list and removes it
     }
     pthread_mutex_unlock(&INlistLockMutex);//unlock InputList
 
@@ -38,7 +38,7 @@ char* GetMessageFromOutputList(void) // pops a message from the tail of the outp
 
     pthread_mutex_lock(&OUTlistLockMutex); //lock Outputlist
     {
-        tempMsg = List_trim(&outputList); // returns the tail of the list and removes it
+        tempMsg = List_trim(outputList); // returns the tail of the list and removes it
     }
     pthread_mutex_unlock(&OUTlistLockMutex);//unlock Outputlist
 
@@ -50,7 +50,7 @@ void SetMessageToInputList(char* msg)
 {
     pthread_mutex_lock(&INlistLockMutex); //lock Inputlist
     {
-        List_prepend(&inputList, msg);
+        List_prepend(inputList, msg);
     }
     pthread_mutex_unlock(&INlistLockMutex);//unlock InputList
 
@@ -60,7 +60,7 @@ void SetMessageToOutputList(char* msg)
 {
     pthread_mutex_lock(&OUTlistLockMutex); //lock Outputlist
     {
-        List_prepend(&outputList, msg);
+        List_prepend(outputList, msg);
     }
     pthread_mutex_unlock(&OUTlistLockMutex);//unlock Outputlist
 
