@@ -30,6 +30,7 @@ char* GetMessageFromInputList(void) // pops a message from the tail of the input
     }
     pthread_mutex_unlock(&INlistLockMutex);//unlock InputList
 
+    TestPrintMsg(tempMsg);
     return tempMsg; // return the temp message
 }
 char* GetMessageFromOutputList(void) // pops a message from the tail of the output list. protected
@@ -48,12 +49,15 @@ char* GetMessageFromOutputList(void) // pops a message from the tail of the outp
 
 void SetMessageToInputList(char* msg)
 {
+    TestPrintMsg(msg);
+    int error;
     pthread_mutex_lock(&INlistLockMutex); //lock Inputlist
     {
-        List_prepend(inputList, msg);
+        error = List_prepend(inputList, msg);
     }
     pthread_mutex_unlock(&INlistLockMutex);//unlock InputList
-
+    
+    printf("The set error is %d : \n", error);
     return;
 }
 void SetMessageToOutputList(char* msg)
@@ -65,4 +69,8 @@ void SetMessageToOutputList(char* msg)
     pthread_mutex_unlock(&OUTlistLockMutex);//unlock Outputlist
 
     return;
+}
+void TestPrintMsg(char* msg) // simple printf function
+{
+    printf("The list says the msg is %s : \n", msg);
 }
