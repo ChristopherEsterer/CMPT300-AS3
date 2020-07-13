@@ -5,8 +5,8 @@ CFLAGS = -Wall -g -std=c99 -D _POSIX_C_SOURCE=200809L -Werror
 all: build
 
 build:
-	gcc $(CFLAGS) demo_conditions.c general.c printer.c signaller.c -o demo_conditions -lpthread 
-
+	gcc $(CFLAGS) demo_conditions.c general.c printer.c signaller.c instructorList.o -o demo_conditions -lpthread 
+# include instructorList.o to compile the list ADT
 
 run: build
 	./demo_conditions
