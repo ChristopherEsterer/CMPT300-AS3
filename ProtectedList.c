@@ -78,13 +78,13 @@ void InitLists(void)// allocate the memory for the lists
 {   
     pthread_mutex_lock(&INlistLockMutex); //lock Inputlist
     {
-    List_create(inputList);
+    inputList = List_create();
     }
     pthread_mutex_unlock(&INlistLockMutex);//unlock InputList
     
     pthread_mutex_lock(&OUTlistLockMutex); //lock Outputlist
     {
-    List_create(outputList);
+    outputList = List_create();
     }
     pthread_mutex_unlock(&OUTlistLockMutex);//unlock Outputlist
 }
