@@ -80,7 +80,8 @@ void* receiveThread(void* unused)
 void Receiver_init(char* rxMessage)
 {
     dynamicMessage = malloc(DYNAMIC_LEN);
-    InitLists();
+    
+    InitLists(); // Initalized the lists for memory allocation
 
     s_rxMessage = rxMessage;
     pthread_create(

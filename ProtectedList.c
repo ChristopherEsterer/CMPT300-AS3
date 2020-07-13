@@ -75,7 +75,16 @@ void TestPrintMsg(char* msg) // simple printf function
     printf("The list says the msg is %s : \n", msg);
 }
 void InitLists(void)// allocate the memory for the lists
-{
+{   
+    pthread_mutex_lock(&INlistLockMutex); //lock Inputlist
+    {
     List_create(inputList);
-    //inputList = malloc(sizeof(struct List));
+    }
+    pthread_mutex_unlock(&INlistLockMutex);//unlock InputList
+    
+    pthread_mutex_lock(&OUTlistLockMutex); //lock Outputlist
+    {
+    List_create(outputList);
+    }
+    pthread_mutex_unlock(&OUTlistLockMutex);//unlock Outputlist
 }
