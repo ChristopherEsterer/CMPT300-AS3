@@ -36,11 +36,11 @@ char* GetMessageFromOutputList(void) // pops a message from the tail of the outp
 {
     static char* tempMsg; // make a temporary message holder
 
-    pthread_mutex_lock(&OUTlistLockMutex); //lock Inputlist
+    pthread_mutex_lock(&OUTlistLockMutex); //lock Outputlist
     {
         tempMsg = List_trim(&outputList); // returns the tail of the list and removes it
     }
-    pthread_mutex_unlock(&OUTlistLockMutex);//unlock InputList
+    pthread_mutex_unlock(&OUTlistLockMutex);//unlock Outputlist
 
     return tempMsg; // return the temp message
 }
@@ -58,11 +58,11 @@ void SetMessageToInputList(char* msg)
 }
 void SetMessageToOutputList(char* msg)
 {
-    pthread_mutex_lock(&OUTlistLockMutex); //lock Inputlist
+    pthread_mutex_lock(&OUTlistLockMutex); //lock Outputlist
     {
         List_prepend(&outputList, msg);
     }
-    pthread_mutex_unlock(&OUTlistLockMutex);//unlock InputList
+    pthread_mutex_unlock(&OUTlistLockMutex);//unlock Outputlist
 
     return;
 }
