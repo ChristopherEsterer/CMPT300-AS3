@@ -8,6 +8,9 @@ build:
 	gcc $(CFLAGS) demo_conditions.c general.c printer.c signaller.c instructorList.o -o demo_conditions -lpthread 
 # include instructorList.o to compile the list ADT
 
+buildCTest:
+	gcc $(CFLAGS) instructorList.o UDPRevceive.c ProtectedList.c ChrisTestingMain.c -o TestChris -lpthread 
+
 run: build
 	./demo_conditions
 
