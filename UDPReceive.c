@@ -53,7 +53,7 @@ void* receiveThread(void* unused)
 		// Note: sin passes information in and out of call!
 		struct sockaddr_in sinRemote;
 		unsigned int sin_len = sizeof(sinRemote);
-		char messageRx[MSG_MAX_LEN];
+		static char messageRx[MSG_MAX_LEN];
 		recvfrom(socketDescriptor,
 			messageRx, MSG_MAX_LEN, 0,
 			(struct sockaddr *) &sinRemote, &sin_len);
@@ -80,6 +80,7 @@ void* receiveThread(void* unused)
 void Receiver_init(char* rxMessage)
 {
     dynamicMessage = malloc(DYNAMIC_LEN);
+    InitLists();
 
     s_rxMessage = rxMessage;
     pthread_create(

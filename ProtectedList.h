@@ -10,3 +10,4 @@ void SetMessageToInputList(char* msg); // adds a message to the list, protects t
 void SetMessageToOutputList(char* msg);
 
 void TestPrintMsg(char* msg); // simple printf function
+void InitLists(void); // allocate list memory?

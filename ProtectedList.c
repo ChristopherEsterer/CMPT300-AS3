@@ -17,7 +17,7 @@
 static pthread_mutex_t INlistLockMutex = PTHREAD_MUTEX_INITIALIZER; 
 static pthread_mutex_t OUTlistLockMutex = PTHREAD_MUTEX_INITIALIZER;
 
-static List* inputList; // a list for input messages (messages to be printed)
+static List* inputList; //= malloc(sizeof(List)); // a list for input messages (messages to be printed)
 static List* outputList; // a list for output messages (messages to be sent)
 
 char* GetMessageFromInputList(void) // pops a message from the tail of the input list. protected
@@ -73,4 +73,9 @@ void SetMessageToOutputList(char* msg)
 void TestPrintMsg(char* msg) // simple printf function
 {
     printf("The list says the msg is %s : \n", msg);
+}
+void InitLists(void)// allocate the memory for the lists
+{
+    List_create(inputList);
+    //inputList = malloc(sizeof(struct List));
 }
