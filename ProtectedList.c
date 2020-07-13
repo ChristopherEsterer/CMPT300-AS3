@@ -3,27 +3,66 @@
 // almost like a C++ class
 // the list callfunctions need to be verified
 
-#include mutexes and list stuff.
-//#include <pthread.h> // for mutexes
-#include <ProtectedList.h>
+#include <pthread.h> // for mutex
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
-mutex listMutex; // the list will have a mutex that it will lock and unlock itself. this will prevent one thread from calling Get() while another thread calls Set().
+#include "ProtectedList.h" // the .h file for the function prototypes
+#include "list.h" // the list files from AS1 instructorList.o will need to be included into the makefile for compileing
 
-static list thisList; // a list for this ListWrapper
+// the lists will have a mutex that it will lock and unlock itself.
+// this will prevent one thread from calling Get() while another thread calls Set().
 
-char* GetMessageFromList()
+static pthread_mutex_t INlistLockMutex = PTHREAD_MUTEX_INITIALIZER; 
+static pthread_mutex_t OUTlistLockMutex = PTHREAD_MUTEX_INITIALIZER;
+
+static List inputList; // a list for input messages (messages to be printed)
+static List outputList; // a list for output messages (messages to be sent)
+
+char* GetMessageFromInputList(void) // pops a message from the tail of the input list. protected
 {
-listMutex_lock()
-tempMsg = thisList_Append();
-//? whatever gets the item from the front of the list
-listMutex_unlock()
-return tempMsg;
-// not sure if this needs to be static. We don’t want to send a pointer but a copy of the msg data.
+    static char* tempMsg; // make a temporary message holder
+
+    pthread_mutex_lock(&INlistLockMutex); //lock Inputlist
+    {
+        tempMsg = List_trim(&inputList); // returns the tail of the list and removes it
+    }
+    pthread_mutex_unlock(&INlistLockMutex);//unlock InputList
+
+    return tempMsg; // return the temp message
+}
+char* GetMessageFromOutputList(void) // pops a message from the tail of the output list. protected
+{
+    static char* tempMsg; // make a temporary message holder
+
+    pthread_mutex_lock(&OUTlistLockMutex); //lock Inputlist
+    {
+        tempMsg = List_trim(&outputList); // returns the tail of the list and removes it
+    }
+    pthread_mutex_unlock(&OUTlistLockMutex);//unlock InputList
+
+    return tempMsg; // return the temp message
 }
 
-void SetMessageToList(char* msg)
+
+void SetMessageToInputList(char* msg)
 {
-    listMutex_lock()
-    thisList_Push(msg) // push a the message onto the end of the list
-    listMutec_unlock()
+    pthread_mutex_lock(&INlistLockMutex); //lock Inputlist
+    {
+        List_prepend(&inputList, msg);
+    }
+    pthread_mutex_unlock(&INlistLockMutex);//unlock InputList
+
+    return;
+}
+void SetMessageToOutputList(char* msg)
+{
+    pthread_mutex_lock(&OUTlistLockMutex); //lock Inputlist
+    {
+        List_prepend(&outputList, msg);
+    }
+    pthread_mutex_unlock(&OUTlistLockMutex);//unlock InputList
+
+    return;
 }
