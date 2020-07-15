@@ -81,7 +81,7 @@ void Receiver_init(char* rxMessage)
 {
     dynamicMessage = malloc(DYNAMIC_LEN);
     
-    InitLists(); // Initalized the lists for memory allocation
+    InitLists(); // Initalized the lists for memory allocation **shuold both lists be initialized once? So theyll be passed to UDPSend.c? Or better to initalize seperately?
 
     s_rxMessage = rxMessage;
     pthread_create(
