@@ -39,7 +39,7 @@ void* receiveThread(void* unused)
 	memset(&sin, 0, sizeof(sin));
 	sin.sin_family = AF_INET;                   // Connection may be from network
 	sin.sin_addr.s_addr = htonl(INADDR_ANY);    // Host to Network long
-	sin.sin_port = htons(PORT);                 // Host to Network short
+	sin.sin_port = htons(PORT);                 // Host to Network short ** should all be changed to network to host as its reciveing
 	
 	// Create the socket for UDP
 	socketDescriptor = socket(PF_INET, SOCK_DGRAM, 0);
