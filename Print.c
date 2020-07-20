@@ -18,9 +18,11 @@ static pthread_cond_t s_syncOkToPrintCondVar = PTHREAD_COND_INITIALIZER;
 static pthread_mutex_t s_syncOkToPrintMutex = PTHREAD_MUTEX_INITIALIZER;
 
 char* messageToPrint;
+char* messageToPrint2;
+int messageCount = 0;
 
 void* PrinterThread(void* unused){
-
+    //strcpy( messageToPrint, GetMessageFromInputList());
     while(1) {
      
         pthread_mutex_lock(&s_syncOkToPrintMutex);
@@ -28,23 +30,30 @@ void* PrinterThread(void* unused){
         pthread_cond_wait(&s_syncOkToPrintCondVar, &s_syncOkToPrintMutex); // this will be signalled by external
         }
         pthread_mutex_unlock(&s_syncOkToPrintMutex);
-        //GetMessageFromInputList2(messageToPrint);
-        //for (const char* msg = GetMessageFromInputList(); *msg != '\0'; msg++) {
-
-            //   printf("%c", *msg);
-            //    fflush(stdout);
-        //}
-
-
-
+        GetMessageFromInputList2(messageToPrint);
+        do{
+                
+                printf("%c", *messageToPrint);
+                messageToPrint++;
+                fflush(stdout);
+                
+        }while (*messageToPrint != '\n'); 
 
         
+        //while (messageCount > 0){
+        //{
+            /* code */
+        
+        
+        //strcpy( messageToPrint, GetMessageFromInputList());
+       // strcpy( messageToPrint, GetMessageFromInputList());
         //char* messageToPrint = GetMessageFromInputList();
-        //GetMessageFromInputList2(messageToPrint);// this is protected from the protectedList ADT
+        //GetMessageFromInputList2(messageToPrint2);// this is protected from the protectedList ADT
       
-       // printf("%s", messageToPrint);
-       // fprintf( stdout, "%s" , messageToPrint );
-       // fflush(stdout);
+        //printf("%s : %ld", messageToPrint, sizeof(*messageToPrint) );
+        //fprintf( stdout, "Get1: %s" , messageToPrint );
+        //fprintf( stdout, "Get2: %s\n" , messageToPrint2 );
+        //fflush(stdout);
         //}
     }
     return NULL;
@@ -77,6 +86,7 @@ void Printer_signalMessage(void) // from workshop. Use to lock the condition var
     pthread_mutex_lock(&s_syncOkToPrintMutex);
     {
         pthread_cond_signal(&s_syncOkToPrintCondVar);
+        //messageToPrint++;
     }
     pthread_mutex_unlock(&s_syncOkToPrintMutex);
 }
@@ -85,7 +95,7 @@ void Printer_signalMessage(void) // from workshop. Use to lock the condition var
 void Printer_init()
 {
     messageToPrint = malloc(DYNAMIC_LEN);
-    
+    messageToPrint2 = malloc(DYNAMIC_LEN);
    // InitLists(); // Initalized the lists for memory allocation done in main. *** is it?
 
     //s_rxMessage = rxMessage;

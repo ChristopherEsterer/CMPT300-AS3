@@ -14,6 +14,7 @@
 
 // the lists will have a mutex that it will lock and unlock itself.
 // this will prevent one thread from calling Get() while another thread calls Set().
+#define DYNAMIC_LEN 128
 
 static pthread_mutex_t INlistLockMutex = PTHREAD_MUTEX_INITIALIZER; 
 static pthread_mutex_t OUTlistLockMutex = PTHREAD_MUTEX_INITIALIZER;
@@ -21,9 +22,11 @@ static pthread_mutex_t OUTlistLockMutex = PTHREAD_MUTEX_INITIALIZER;
 static List* inputList;  // a list for input messages (messages to be printed)
 static List* outputList; // a list for output messages (messages to be sent)
 
+//static char* tempMsg; // dynamic message for string copy
+
 char* GetMessageFromInputList(void) // pops a message from the tail of the input list. protected
 {
-    static char* tempMsg; // make a temporary message holder
+    char* tempMsg; // make a temporary message holder
 
     pthread_mutex_lock(&INlistLockMutex); //lock Inputlist
     {
@@ -36,11 +39,12 @@ char* GetMessageFromInputList(void) // pops a message from the tail of the input
 }
 void GetMessageFromInputList2(char* holder) // pops a message from the tail of the input list. protected
 {
-    //static char* tempMsg; // make a temporary message holder
+    char* tempMsg; // make a temporary message holder
 
     pthread_mutex_lock(&INlistLockMutex); //lock Inputlist
     {
-        strcpy(holder, List_trim(inputList)); // ***new
+        tempMsg = List_trim(inputList);
+        strncpy(holder, tempMsg , strlen(tempMsg) ); // ***new
         
         //tempMsg = List_trim(inputList); // returns the tail of the list and removes it
     }
@@ -65,17 +69,18 @@ char* GetMessageFromOutputList(void) // pops a message from the tail of the outp
 
 void SetMessageToInputList(char* msg)
 {
-    //TestPrintMsg(msg);
     //int error;
+    char* tempMsg = msg; // make a temporary message holder
     pthread_mutex_lock(&INlistLockMutex); //lock Inputlist
     {
        // error = 
-        List_prepend(inputList, msg);
+       //tempMsg =
+       //strncpy(tempMsg, msg, strlen(msg)); //**new
+       List_prepend(inputList, tempMsg); // old
     }
     pthread_mutex_unlock(&INlistLockMutex);//unlock InputList
     
-    SignalPrintMsg();//msg);
-    //printf("The set error is %d : \n", error);
+    
     return;
 }
 void SetMessageToOutputList(char* msg)
@@ -101,6 +106,8 @@ return i;
 }
 void InitLists(void)// allocate the memory for the lists
 {   
+    //tempMsg = malloc(DYNAMIC_LEN);
+    
     pthread_mutex_lock(&INlistLockMutex); //lock Inputlist
     {
     inputList = List_create();
