@@ -23,24 +23,24 @@ void* PrinterThread(void* unused){
 
     while(1) {
      
-    pthread_mutex_lock(&s_syncOkToPrintMutex);
-    {
-        pthread_cond_wait(&s_syncOkToPrintCondVar, &s_syncOkToPrintMutex); // this will be signalled by the list
-    }
-    pthread_mutex_unlock(&s_syncOkToPrintMutex);
-    //GetMessageFromInputList2(messageToPrint);
-    for (const char* msg = GetMessageFromInputList(); *msg != '\0'; msg++) {
+        pthread_mutex_lock(&s_syncOkToPrintMutex);
+        {
+        pthread_cond_wait(&s_syncOkToPrintCondVar, &s_syncOkToPrintMutex); // this will be signalled by external
+        }
+        pthread_mutex_unlock(&s_syncOkToPrintMutex);
+        //GetMessageFromInputList2(messageToPrint);
+        //for (const char* msg = GetMessageFromInputList(); *msg != '\0'; msg++) {
 
-        printf("%c", *msg);
-        fflush(stdout);
-    }
+            //   printf("%c", *msg);
+            //    fflush(stdout);
+        //}
 
 
 
 
         
         //char* messageToPrint = GetMessageFromInputList();
-      //  GetMessageFromInputList2(messageToPrint);// this is protected from the protectedList ADT
+        //GetMessageFromInputList2(messageToPrint);// this is protected from the protectedList ADT
       
        // printf("%s", messageToPrint);
        // fprintf( stdout, "%s" , messageToPrint );
@@ -72,7 +72,7 @@ void* PrinterThread(void* unused){
 }
 
 
-void Printer_signalMessage(void) // from workshop. Use to lock the condition variable
+void Printer_signalMessage(void) // from workshop. Use to lock the condition variable. This is the external signnal call
 {
     pthread_mutex_lock(&s_syncOkToPrintMutex);
     {
