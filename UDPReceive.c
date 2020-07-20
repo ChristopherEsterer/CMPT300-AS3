@@ -69,8 +69,8 @@ void* receiveThread(void* unused)
 
         //printf("msg = %s \n", messageRx);
         SetMessageToInputList(messageRx);
-        char* tempMsg = GetMessageFromInputList();
-        printf("msg from List = %s \n", tempMsg );
+       // char* tempMsg = GetMessageFromInputList();
+        //printf("msg from List = %s \n", tempMsg );
 	}
     // NOTE NEVER EXECUTES BECEAUSE THREAD IS CANCELLED
 	return NULL;

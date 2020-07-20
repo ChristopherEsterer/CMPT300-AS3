@@ -5,9 +5,12 @@
 
 // Function declaration
 char* GetMessageFromInputList(void); // get a Message from the list, wraps the list read in mutexes
+void GetMessageFromInputList2(char*);
 char* GetMessageFromOutputList(void);
 void SetMessageToInputList(char* msg); // adds a message to the list, protects the list push call.
 void SetMessageToOutputList(char* msg);
 
-void TestPrintMsg(char* msg); // simple printf function
+int GetListSize(void);
+
+void SignalPrintMsg(void); //
 void InitLists(void); // allocate list memory?

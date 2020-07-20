@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "Print.h"
 #include "ProtectedList.h" // the .h file for the function prototypes
 #include "list.h" // the list files from AS1 instructorList.o will need to be included into the makefile for compileing
 
@@ -30,12 +31,27 @@ char* GetMessageFromInputList(void) // pops a message from the tail of the input
     }
     pthread_mutex_unlock(&INlistLockMutex);//unlock InputList
 
-    TestPrintMsg(tempMsg);
+    
     return tempMsg; // return the temp message
+}
+void GetMessageFromInputList2(char* holder) // pops a message from the tail of the input list. protected
+{
+    //static char* tempMsg; // make a temporary message holder
+
+    pthread_mutex_lock(&INlistLockMutex); //lock Inputlist
+    {
+        strcpy(holder, List_trim(inputList)); // ***new
+        
+        //tempMsg = List_trim(inputList); // returns the tail of the list and removes it
+    }
+    pthread_mutex_unlock(&INlistLockMutex);//unlock InputList
+
+    
+    return; // return the temp message
 }
 char* GetMessageFromOutputList(void) // pops a message from the tail of the output list. protected
 {
-    static char* tempMsg; // make a temporary message holder
+    char* tempMsg; // make a temporary message holder
 
     pthread_mutex_lock(&OUTlistLockMutex); //lock Outputlist
     {
@@ -49,15 +65,17 @@ char* GetMessageFromOutputList(void) // pops a message from the tail of the outp
 
 void SetMessageToInputList(char* msg)
 {
-    TestPrintMsg(msg);
-    int error;
+    //TestPrintMsg(msg);
+    //int error;
     pthread_mutex_lock(&INlistLockMutex); //lock Inputlist
     {
-        error = List_prepend(inputList, msg);
+       // error = 
+        List_prepend(inputList, msg);
     }
     pthread_mutex_unlock(&INlistLockMutex);//unlock InputList
     
-    printf("The set error is %d : \n", error);
+    SignalPrintMsg();//msg);
+    //printf("The set error is %d : \n", error);
     return;
 }
 void SetMessageToOutputList(char* msg)
@@ -70,9 +88,16 @@ void SetMessageToOutputList(char* msg)
 
     return;
 }
-void TestPrintMsg(char* msg) // simple printf function
+void SignalPrintMsg(void)  //char* msg) // simple printf function
 {
-    printf("The list says the msg is %s : \n", msg);
+    Printer_signalMessage(); // Printer call to tell its convar to run. Printer holds the mutex for the convar.
+   // printf("The list says signaling print/n");
+}
+int GetListSize(void)
+{
+int i = 0;
+i = List_count(inputList);
+return i;
 }
 void InitLists(void)// allocate the memory for the lists
 {   

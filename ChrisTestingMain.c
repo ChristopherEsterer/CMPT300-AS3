@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "UDPReceive.h"
-
+#include "Print.h"
 int main(int argc, char** args)
 {
     printf("Starting..\n");
@@ -11,7 +11,7 @@ int main(int argc, char** args)
     // pthread_mutex_t sharedMutex = ...;
     // Receiver_init("Sire! A message! ", &sharedMutex);
     Receiver_init("Sire! A message! ");
-
+    Printer_init();
     // Wait for user input
     printf("Enter something to kill the receive thread\n");
     char x;
