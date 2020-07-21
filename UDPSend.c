@@ -45,7 +45,7 @@ void* SendThread(void* unused)
 	memset(&sin, 0, sizeof(sin));
 	sin.sin_family = AF_INET;                   // Connection may be from network
 	sin.sin_addr.s_addr = htonl(INADDR_ANY);    // Host to Network long
-	sin.sin_port = htons(portNumber);                 // Host to Network short ** should all be changed to network to host as its reciveing
+	sin.sin_port = htonl(portNumber);                 // Host to Network short ** should all be changed to network to host as its reciveing
 	
 	// Create the socket for UDP
 	socketDescriptor = socket(PF_INET, SOCK_DGRAM, 0);
@@ -66,11 +66,10 @@ void* SendThread(void* unused)
 
 		static char* messageTx;
         messageTx = GetMessageFromOutputList(); // get output message from List
-		sendto(socketDescriptor,
-			messageTx, MSG_MAX_LEN, 0,
-			(struct sockaddr *) &sinRemote, sin_len);
+		int sendError = 0;
+        sendError = sendto(socketDescriptor,messageTx, MSG_MAX_LEN, 0,(struct sockaddr *) &sin, sin_len);
 
-        printf("msg sent: %s \n", messageTx );
+        printf("msg sent: %s (%d)\n", messageTx, sendError );
 	}
     // NOTE NEVER EXECUTES BECEAUSE THREAD IS CANCELLED
 	return NULL;
