@@ -70,13 +70,14 @@ char* GetMessageFromOutputList(void) // pops a message from the tail of the outp
 void SetMessageToInputList(char* msg)
 {
     //int error;
-    char* tempMsg = msg; // make a temporary message holder
+    //char* tempMsg = msg; // make a temporary message holder
     pthread_mutex_lock(&INlistLockMutex); //lock Inputlist
     {
        // error = 
        //tempMsg =
        //strncpy(tempMsg, msg, strlen(msg)); //**new
-       List_prepend(inputList, tempMsg); // old
+       //List_prepend(inputList, tempMsg); // old
+       List_prepend(inputList, msg);
     }
     pthread_mutex_unlock(&INlistLockMutex);//unlock InputList
     

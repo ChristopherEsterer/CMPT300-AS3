@@ -34,20 +34,21 @@ int main(int argCount, char** args)
     printf("Sender..\n");
     SenderInit(senderPort);
     // Wait for user input
-    for (int i=0; i<5; i++){
+    char x[1024];
+    do{
         printf("Enter something to send: \n");
-        char x[1024];
+        //char x[1024];
         scanf("%s", x);
         SetMessageToOutputList(x);
         SenderSignalMessage(); // signal Sender to send
-    }
+    }while(*x != '!');
     //SignalPrintMsg();
     // Shutdown my modules
-    char x;
-    //scanf("%c", &x);
-    printf("Enter something to kill the receive thread\n");
     //char x;
-    scanf("%c", &x);
+    //scanf("%c", &x);
+   // printf("Enter something to kill the receive thread\n");
+    //char x;
+    //scanf("%c", &x);
     Receiver_shutdown();
     Printer_shutdown();
     SenderShutdown();
