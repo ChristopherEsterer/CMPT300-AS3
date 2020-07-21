@@ -2,7 +2,7 @@
 // Some code supplied from workshops
 #include "ProtectedList.h" // include the protected list module
 #include "UDPReceive.h"
-
+#include "Print.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <netdb.h>
@@ -69,6 +69,7 @@ void* receiveThread(void* unused)
 
         //printf("msg = %s \n", messageRx);
         SetMessageToInputList(messageRx);
+        Printer_signalMessage();
        // char* tempMsg = GetMessageFromInputList();
         //printf("msg from List = %s \n", tempMsg );
 	}
