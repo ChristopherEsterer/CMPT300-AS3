@@ -1,7 +1,7 @@
 // UDP Reveive module
 // Some code supplied from workshops
 #include "ProtectedList.h" // include the protected list module
-#include "UDPReceive.h"
+#include "UDPSend.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,9 +17,11 @@
 
 //static pthread_mutex_t dynamicMsgMutex = PTHREAD_MUTEX_INITIALIZER; // implemented in the Protected list
 
+int portNumber = 0;
+
 static pthread_t threadPID;
 static int socketDescriptor;
-static char* s_rxMessage;
+//static char* s_rxMessage;
 
 static char* dynamicMessage; // not sure if needed
 
@@ -43,7 +45,7 @@ void* SendThread(void* unused)
 	memset(&sin, 0, sizeof(sin));
 	sin.sin_family = AF_INET;                   // Connection may be from network
 	sin.sin_addr.s_addr = htonl(INADDR_ANY);    // Host to Network long
-	sin.sin_port = htons(PORT);                 // Host to Network short ** should all be changed to network to host as its reciveing
+	sin.sin_port = htons(portNumber);                 // Host to Network short ** should all be changed to network to host as its reciveing
 	
 	// Create the socket for UDP
 	socketDescriptor = socket(PF_INET, SOCK_DGRAM, 0);
@@ -66,20 +68,8 @@ void* SendThread(void* unused)
         messageTx = GetMessageFromOutputList(); // get output message from List
 		sendto(socketDescriptor,
 			messageTx, MSG_MAX_LEN, 0,
-			(struct sockaddr *) &sinRemote, &sin_len);
+			(struct sockaddr *) &sinRemote, sin_len);
 
-        // Do something amazing with the received message!
-       /* *** changed to use the protected list
-        pthread_mutex_lock(&dynamicMsgMutex);
-        {
-            printf("%s >> %s: %s\n", dynamicMessage, s_rxMessage, messageRx);
-        }
-        pthread_mutex_unlock(&dynamicMsgMutex);
-        */
-
-        //printf("msg = %s \n", messageRx);
-        //SetMessageToInputList(messageRx);
-        //char* tempMsg = GetMessageFromInputList();
         printf("msg sent: %s \n", messageTx );
 	}
     // NOTE NEVER EXECUTES BECEAUSE THREAD IS CANCELLED
@@ -87,13 +77,14 @@ void* SendThread(void* unused)
 }
 
 
-void SenderInit(char* rxMessage)
+void SenderInit(int portNum)
 {
     dynamicMessage = malloc(DYNAMIC_LEN);
     
+    portNumber = portNum;
     //InitLists(); // Initalized the lists for memory allocation **shuold both lists be initialized once? So theyll be passed to UDPSend.c? Or better to initalize seperately?
 
-    s_rxMessage = rxMessage;
+   // s_rxMessage = rxMessage;
     pthread_create(
         &threadPID,         // PID (by pointer)
         NULL,               // Attributes

@@ -17,9 +17,11 @@
 
 //static pthread_mutex_t dynamicMsgMutex = PTHREAD_MUTEX_INITIALIZER; // implemented in the Protected list
 
+int portNumber = 0;
+
 static pthread_t threadPID;
 static int socketDescriptor;
-static char* s_rxMessage;
+//static char* s_rxMessage;
 
 static char* dynamicMessage; // not sure if needed
 
@@ -39,7 +41,7 @@ void* receiveThread(void* unused)
 	memset(&sin, 0, sizeof(sin));
 	sin.sin_family = AF_INET;                   // Connection may be from network
 	sin.sin_addr.s_addr = htonl(INADDR_ANY);    // Host to Network long
-	sin.sin_port = htons(PORT);                 // Host to Network short ** should all be changed to network to host as its reciveing
+	sin.sin_port = htons(portNumber);                 // Host to Network short ** should all be changed to network to host as its reciveing
 	
 	// Create the socket for UDP
 	socketDescriptor = socket(PF_INET, SOCK_DGRAM, 0);
@@ -78,13 +80,14 @@ void* receiveThread(void* unused)
 }
 
 
-void Receiver_init(char* rxMessage)
+void Receiver_init(int portNumb)
 {
     dynamicMessage = malloc(DYNAMIC_LEN);
     
-    InitLists(); // Initalized the lists for memory allocation **shuold both lists be initialized once? So theyll be passed to UDPSend.c? Or better to initalize seperately?
+    //InitLists(); // Initalized the lists for memory allocation **shuold both lists be initialized once? So theyll be passed to UDPSend.c? Or better to initalize seperately?
 
-    s_rxMessage = rxMessage;
+    portNumber = portNumb;
+    //s_rxMessage = rxMessage;
     pthread_create(
         &threadPID,         // PID (by pointer)
         NULL,               // Attributes

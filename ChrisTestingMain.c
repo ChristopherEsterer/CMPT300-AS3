@@ -5,6 +5,10 @@
 #include "UDPSend.h"
 #include "Print.h"
 #include "ProtectedList.h"
+
+int senderPort = 0;
+int receiverPort = 0;
+
 int main(int argc, char** args)
 {
     printf("Starting..\n");
@@ -12,15 +16,16 @@ int main(int argc, char** args)
     // Startup my modules
     // pthread_mutex_t sharedMutex = ...;
     // Receiver_init("Sire! A message! ", &sharedMutex);
-    Receiver_init("Sire! A message! ");
+    Receiver_init(receiverPort);
+    InitLists();
     Printer_init();
-    SenderInit("void Message");
+    SenderInit(senderPort);
     // Wait for user input
     for (int i=0; i<5; i++){
-        printf("Enter something to send\n");
-        char x;
-        scanf("%c", &x);
-        SetMessageToOutputList(&x);
+        printf("Enter something to send: \n");
+        char x[1024];
+        scanf("%s", x);
+        SetMessageToOutputList(x);
         SenderSignalMessage(); // signal Sender to send
     }
     //SignalPrintMsg();
