@@ -23,7 +23,11 @@ static char* s_rxMessage;
 
 static char* dynamicMessage; // not sure if needed
 
-void* receiveThread(void* unused)
+static pthread_cond_t s_syncOkToSendCondVar = PTHREAD_COND_INITIALIZER;
+static pthread_mutex_t s_syncOkToSendMutex = PTHREAD_MUTEX_INITIALIZER;
+
+
+void* SendThread(void* unused)
 {
     // Dynamically allocate a message
     /*
@@ -48,14 +52,20 @@ void* receiveThread(void* unused)
 	bind (socketDescriptor, (struct sockaddr*) &sin, sizeof(sin));
 	
 	while (1) {
-		// Get the data (blocking)
+
+        pthread_cond_wait(&s_syncOkToSendCondVar, &s_syncOkToSendMutex); // wait condition
+
+
+		// Send the data (blocking)
 		// Will change sin (the address) to be the address of the client.
 		// Note: sin passes information in and out of call!
 		struct sockaddr_in sinRemote;
 		unsigned int sin_len = sizeof(sinRemote);
-		static char messageRx[MSG_MAX_LEN];
-		recvfrom(socketDescriptor,
-			messageRx, MSG_MAX_LEN, 0,
+
+		static char* messageTx;
+        messageTx = GetMessageFromOutputList(); // get output message from List
+		sendto(socketDescriptor,
+			messageTx, MSG_MAX_LEN, 0,
 			(struct sockaddr *) &sinRemote, &sin_len);
 
         // Do something amazing with the received message!
@@ -68,30 +78,39 @@ void* receiveThread(void* unused)
         */
 
         //printf("msg = %s \n", messageRx);
-        SetMessageToInputList(messageRx);
-        char* tempMsg = GetMessageFromInputList();
-        printf("msg from List = %s \n", tempMsg );
+        //SetMessageToInputList(messageRx);
+        //char* tempMsg = GetMessageFromInputList();
+        printf("msg sent: %s \n", messageTx );
 	}
     // NOTE NEVER EXECUTES BECEAUSE THREAD IS CANCELLED
 	return NULL;
 }
 
 
-void Receiver_init(char* rxMessage)
+void SenderInit(char* rxMessage)
 {
     dynamicMessage = malloc(DYNAMIC_LEN);
     
-    InitLists(); // Initalized the lists for memory allocation **shuold both lists be initialized once? So theyll be passed to UDPSend.c? Or better to initalize seperately?
+    //InitLists(); // Initalized the lists for memory allocation **shuold both lists be initialized once? So theyll be passed to UDPSend.c? Or better to initalize seperately?
 
     s_rxMessage = rxMessage;
     pthread_create(
         &threadPID,         // PID (by pointer)
         NULL,               // Attributes
-        receiveThread,      // Function
+        SendThread,      // Function
         NULL);
 }
 
-void Receiver_changeDynamicMessage(char* newDynamic)
+void SenderSignalMessage(void) // External Signal Call to tell the Sender to send. Protected
+{
+    pthread_mutex_lock(&s_syncOkToSendMutex);
+    {
+        pthread_cond_signal(&s_syncOkToSendCondVar);
+    }
+    pthread_mutex_unlock(&s_syncOkToSendMutex);
+}
+
+void SenderChangeDynamicMessage(char* newDynamic)
 {
     //pthread_mutex_lock(&dynamicMsgMutex);
     //{
@@ -101,7 +120,7 @@ void Receiver_changeDynamicMessage(char* newDynamic)
 }
 
 
-void Receiver_shutdown(void)
+void SenderShutdown(void)
 {
     // Cancel thread
     pthread_cancel(threadPID);

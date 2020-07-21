@@ -9,7 +9,7 @@ build:
 # include instructorList.o to compile the list ADT
 
 buildCTest:
-	gcc $(CFLAGS) instructorList.o UDPReceive.c Print.c ProtectedList.c ChrisTestingMain.c -o TestChris -lpthread 
+	gcc $(CFLAGS) instructorList.o UDPReceive.c UDPSend.c Print.c ProtectedList.c ChrisTestingMain.c -o TestChris -lpthread 
 
 run: build
 	./demo_conditions
