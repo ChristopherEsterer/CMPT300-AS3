@@ -1,7 +1,7 @@
 // UDP Reveive module
 // Some code supplied from workshops
 #include "ProtectedList.h" // include the protected list module
-#include "UDPReceive.h"
+#include "UDPSend.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,13 +17,19 @@
 
 //static pthread_mutex_t dynamicMsgMutex = PTHREAD_MUTEX_INITIALIZER; // implemented in the Protected list
 
+int portNumber = 0;
+
 static pthread_t threadPID;
 static int socketDescriptor;
-static char* s_rxMessage;
+//static char* s_rxMessage;
 
 static char* dynamicMessage; // not sure if needed
 
-void* receiveThread(void* unused)
+static pthread_cond_t s_syncOkToSendCondVar = PTHREAD_COND_INITIALIZER;
+static pthread_mutex_t s_syncOkToSendMutex = PTHREAD_MUTEX_INITIALIZER;
+
+
+void* SendThread(void* unused)
 {
     // Dynamically allocate a message
     /*
@@ -39,59 +45,63 @@ void* receiveThread(void* unused)
 	memset(&sin, 0, sizeof(sin));
 	sin.sin_family = AF_INET;                   // Connection may be from network
 	sin.sin_addr.s_addr = htonl(INADDR_ANY);    // Host to Network long
-	sin.sin_port = htons(PORT);                 // Host to Network short ** should all be changed to network to host as its reciveing
+	sin.sin_port = htons(portNumber);                 // Host to Network short ** should all be changed to network to host as its reciveing
 	
-	// Create the socket for UDP
+	// Create the socket for IPv4 UDP
 	socketDescriptor = socket(PF_INET, SOCK_DGRAM, 0);
 
 	// Bind the socket to the port (PORT) that we specify
+    int bindError =0;
 	bind (socketDescriptor, (struct sockaddr*) &sin, sizeof(sin));
-	
+	printf("SBind Err: (%d)\n",bindError);
 	while (1) {
-		// Get the data (blocking)
+
+        pthread_cond_wait(&s_syncOkToSendCondVar, &s_syncOkToSendMutex); // wait condition
+
+
+		// Send the data (blocking)
 		// Will change sin (the address) to be the address of the client.
 		// Note: sin passes information in and out of call!
 		struct sockaddr_in sinRemote;
 		unsigned int sin_len = sizeof(sinRemote);
-		static char messageRx[MSG_MAX_LEN];
-		recvfrom(socketDescriptor,
-			messageRx, MSG_MAX_LEN, 0,
-			(struct sockaddr *) &sinRemote, &sin_len);
 
-        // Do something amazing with the received message!
-       /* *** changed to use the protected list
-        pthread_mutex_lock(&dynamicMsgMutex);
-        {
-            printf("%s >> %s: %s\n", dynamicMessage, s_rxMessage, messageRx);
-        }
-        pthread_mutex_unlock(&dynamicMsgMutex);
-        */
+		static char* messageTx;
+        messageTx = GetMessageFromOutputList(); // get output message from List
+		int sendError = 0;
+        sendError = sendto(socketDescriptor,messageTx, MSG_MAX_LEN, 0,(struct sockaddr *) &sin, sin_len);
 
-        //printf("msg = %s \n", messageRx);
-        SetMessageToInputList(messageRx);
-        char* tempMsg = GetMessageFromInputList();
-        printf("msg from List = %s \n", tempMsg );
+        printf("msg sent: %s (%d)\n", messageTx, sendError );
 	}
     // NOTE NEVER EXECUTES BECEAUSE THREAD IS CANCELLED
 	return NULL;
 }
 
 
-void Receiver_init(char* rxMessage)
+void SenderInit(int portNum)
 {
     dynamicMessage = malloc(DYNAMIC_LEN);
     
-    InitLists(); // Initalized the lists for memory allocation **shuold both lists be initialized once? So theyll be passed to UDPSend.c? Or better to initalize seperately?
+    portNumber = portNum;
+    //InitLists(); // Initalized the lists for memory allocation **shuold both lists be initialized once? So theyll be passed to UDPSend.c? Or better to initalize seperately?
 
-    s_rxMessage = rxMessage;
+   // s_rxMessage = rxMessage;
     pthread_create(
         &threadPID,         // PID (by pointer)
         NULL,               // Attributes
-        receiveThread,      // Function
+        SendThread,      // Function
         NULL);
 }
 
-void Receiver_changeDynamicMessage(char* newDynamic)
+void SenderSignalMessage(void) // External Signal Call to tell the Sender to send. Protected
+{
+    pthread_mutex_lock(&s_syncOkToSendMutex);
+    {
+        pthread_cond_signal(&s_syncOkToSendCondVar);
+    }
+    pthread_mutex_unlock(&s_syncOkToSendMutex);
+}
+
+void SenderChangeDynamicMessage(char* newDynamic)
 {
     //pthread_mutex_lock(&dynamicMsgMutex);
     //{
@@ -101,7 +111,7 @@ void Receiver_changeDynamicMessage(char* newDynamic)
 }
 
 
-void Receiver_shutdown(void)
+void SenderShutdown(void)
 {
     // Cancel thread
     pthread_cancel(threadPID);

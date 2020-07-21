@@ -4,7 +4,7 @@
 
 // Function Declarations
 void UDPSend(void); // UDPSend function ***
-void UDPThreadCreate(/* pList, conVar, portinfo*//*); // Creates thread for UDP send ***
+void UDPThreadCreate( pList, conVar, portinfo); // Creates thread for UDP send ***
  */
 
 // .h file for UDPSend module
@@ -14,12 +14,12 @@ void UDPThreadCreate(/* pList, conVar, portinfo*//*); // Creates thread for UDP 
 
 // Start background send thread
 // void Receiver_init(char* rxMessage, pthread_mutex_t sharedMutexWithOtherThread);
-void Sender_init(char* txMessage);
-
+void SenderInit(int port);
+void* SendThread(void* unused);
 // Set the dynamic message -- Threadsafe
-void Sender_changeDynamicMessage(char* txMessage);
-
+void SenderChangeDynamicMessage(char* txMessage);
+void SenderSignalMessage(void);
 // Stop background receive thread and cleanup
-void Sender_shutdown(void);
+void SenderShutdown(void);
 
 #endif

@@ -5,7 +5,7 @@
 
 // Start background receive thread
 // void Receiver_init(char* rxMessage, pthread_mutex_t sharedMutexWithOtherThread);
-void Receiver_init(char* rxMessage);
+void Receiver_init(int port);
 
 // Set the dynamic message -- Threadsafe
 void Receiver_changeDynamicMessage(char* rxMessage);
