@@ -45,14 +45,15 @@ void* SendThread(void* unused)
 	memset(&sin, 0, sizeof(sin));
 	sin.sin_family = AF_INET;                   // Connection may be from network
 	sin.sin_addr.s_addr = htonl(INADDR_ANY);    // Host to Network long
-	sin.sin_port = htonl(portNumber);                 // Host to Network short ** should all be changed to network to host as its reciveing
+	sin.sin_port = htons(portNumber);                 // Host to Network short ** should all be changed to network to host as its reciveing
 	
-	// Create the socket for UDP
+	// Create the socket for IPv4 UDP
 	socketDescriptor = socket(PF_INET, SOCK_DGRAM, 0);
 
 	// Bind the socket to the port (PORT) that we specify
+    int bindError =0;
 	bind (socketDescriptor, (struct sockaddr*) &sin, sizeof(sin));
-	
+	printf("SBind Err: (%d)\n",bindError);
 	while (1) {
 
         pthread_cond_wait(&s_syncOkToSendCondVar, &s_syncOkToSendMutex); // wait condition
