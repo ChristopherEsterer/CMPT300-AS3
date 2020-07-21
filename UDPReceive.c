@@ -47,8 +47,10 @@ void* receiveThread(void* unused)
 	socketDescriptor = socket(PF_INET, SOCK_DGRAM, 0);
 
 	// Bind the socket to the port (PORT) that we specify
-	bind (socketDescriptor, (struct sockaddr*) &sin, sizeof(sin));
-	printf("R port number = %d \n", portRNumber);
+    int bindError = 0;
+	bindError = bind (socketDescriptor, (struct sockaddr*) &sin, sizeof(sin));
+	printf("RBind Err:(%d) \n", bindError);
+    printf("Rport Numb: (%d)\n",sin.sin_port);
 	while (1) {
 		// Get the data (blocking)
 		// Will change sin (the address) to be the address of the client.
