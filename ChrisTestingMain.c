@@ -5,6 +5,7 @@
 #include "UDPSend.h"
 #include "Print.h"
 #include "ProtectedList.h"
+#include <string.h>
 
 int senderPort = 0;
 int receiverPort = 0;
@@ -35,13 +36,17 @@ int main(int argCount, char** args)
     SenderInit(senderPort);
     // Wait for user input
     char x[1024];
-    do{
+    //string x;
+    while(1){
         printf("Enter something to send: \n");
         //char x[1024];
-        scanf("%s", x);
-        SetMessageToOutputList(x);
-        SenderSignalMessage(); // signal Sender to send
-    }while(*x != '\n');
+        do{
+            fgets(x,1024,stdin);
+            //scanf("%s", x);
+            SetMessageToOutputList(x);
+            SenderSignalMessage(); // signal Sender to send
+        }while(*x != '\n');
+    }
     //SignalPrintMsg();
     // Shutdown my modules
     //char x;
