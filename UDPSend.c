@@ -52,7 +52,7 @@ void* SendThread(void* unused)
 
 	// Bind the socket to the port (PORT) that we specify
     int bindError =0;
-	bindError = bind (socketDescriptor, (struct sockaddr*) &sin, sizeof(sin));
+	//bindError = bind (socketDescriptor, (struct sockaddr*) &sin, sizeof(sin));
 	printf("SBind Err: (%d)\n",bindError);
     printf("Sport Numb: (%d)\n",sin.sin_port);
 	while (1) {
