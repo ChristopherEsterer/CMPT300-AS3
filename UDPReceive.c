@@ -32,7 +32,7 @@ static int socketDescriptor;
 static char* dynamicMessage; // not sure if needed
 
 void* receiveThread(void* unused)
-{
+{ 
     struct addrinfo *receiveInfo, hints;
 
 	// Address
@@ -46,19 +46,19 @@ void* receiveThread(void* unused)
 	sin.sin_port = htons(atoi(portRNumber));                 // Host to Network short ** should all be changed to network to host as its reciveing
 	
     memset(&hints, 0, sizeof hints); // make sure the struct is empty
-    hints.ai_family = AF_UNSPEC;     // don't care IPv4 or IPv6
-    hints.ai_socktype = SOCK_STREAM; // TCP stream sockets
+    hints.ai_family = PF_INET;     // don't care IPv4 or IPv6
+    hints.ai_socktype = SOCK_DGRAM; // TCP stream sockets
     hints.ai_flags = AI_PASSIVE;     // fill in my IP for me
     
     
 
-    if ((addrError = getaddrinfo(NULL, portRNumber, &hints, &receiveInfo)) != 0) {
+    if ((addrError = getaddrinfo(addressNumber, portRNumber, &hints, &receiveInfo)) != 0) {
         
         fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(addrError));
         
         //exit(1);
     }
-
+    printf("getaddrinfo Error Receive:(%d) \n", addrError);
 
 	// Create the socket for UDP
 	//socketDescriptor = socket(receiveInfo->ai_family, SOCK_DGRAM, receiveInfo->ai_protocol); // this doesnt need?
@@ -71,10 +71,10 @@ void* receiveThread(void* unused)
 	// Bind the socket to the port (PORT) that we specify
     int bindError = 0;
 	//bindError = bind (socketDescriptor, (struct sockaddr*) &sin, sizeof(sin));//this works
-    bindError = bind (socketDescriptor, (struct sockaddr*) &receiveInfo, receiveInfo->ai_addrlen);
+    bindError = bind (socketDescriptor,  receiveInfo->ai_addr , receiveInfo->ai_addrlen);
 	if (bindError == -1){
     printf("Bind Error Receive:(%d) \n", bindError);
-    printf("Port Numb: (%d)\n",sin.sin_port);
+    printf("Port Numb: (%s)\n",receiveInfo->ai_addr->sa_data);
     }
     int recvError = 0;
 	while (1) {
