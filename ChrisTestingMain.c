@@ -15,7 +15,8 @@ static pthread_cond_t s_syncOkToShutdownCondVar = PTHREAD_COND_INITIALIZER;
 static pthread_mutex_t s_syncOkToShutdownMutex = PTHREAD_MUTEX_INITIALIZER;
 
 int senderPort = 0;
-int receiverPort = 0;
+char* receiverPort;
+char* address = "10.0.0.168";
 
 int main(int argCount, char** args)
 {
@@ -24,7 +25,10 @@ int main(int argCount, char** args)
 	//	printf("Arg %d: %s\n", i, args[i]);
 	//}
     senderPort = atoi(args[1]);
-    receiverPort = atoi(args[2]);
+    //receiverPort = atoi(args[2]);
+
+    receiverPort = args[2];
+    address = args[3];
 	//printf("Chris's Testing on UDP Sending port %d:\n", senderPort);
 	//printf("Connect using: \n");
 	//printf("    netcat -u 127.0.0.1 %d\n", receiverPort);
@@ -35,9 +39,9 @@ int main(int argCount, char** args)
     // Receiver_init("Sire! A message! ", &sharedMutex);
     //printf("List..\n");
     InitLists(); // should be called first.
-    //printf("Receiver..\n");
+    printf("Receiver..\n");
 
-    Receiver_init(receiverPort);
+    Receiver_init(address ,receiverPort);
     //printf("Printer..\n");
     Printer_init();
     //printf("Sender..\n");
