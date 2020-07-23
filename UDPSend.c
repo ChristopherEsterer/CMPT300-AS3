@@ -56,11 +56,12 @@ void* SendThread(void* unused)
            size_t len;
            ssize_t nread;
            char buf[BUF_SIZE];
-
-           if (argc < 3) {
+        
+            //error checking i just commented out
+           /* if (argc < 3) {
                fprintf(stderr, "Usage: %s host port msg...\n", argv[0]);
                exit(EXIT_FAILURE);
-           }
+           } */
 
            /* Obtain address(es) matching host/port */
 
