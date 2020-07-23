@@ -51,4 +51,3 @@ void KeyboardShutdown(void)
     pthread_join(threadKeyboard, NULL);
 
 }
-
