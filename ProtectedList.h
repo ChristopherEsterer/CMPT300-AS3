@@ -13,4 +13,4 @@ void SetMessageToOutputList(char* msg);
 int GetListSize(void);
 
 void SignalPrintMsg(void); //
-void InitLists(void); // allocate list memory?
+void InitLists(void); // allocate list memory
