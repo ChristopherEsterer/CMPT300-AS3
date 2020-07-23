@@ -58,13 +58,14 @@ void* SendThread(void* unused)
            ssize_t nread;
            char buf[BUF_SIZE];
 
-           if (argc != 2) {
+           // ** error checking - cant seam to get it to work
+           /* if (argc != 2) {
                fprintf(stderr, "Usage: %s port\n", argv[0]);
                exit(EXIT_FAILURE);
-           }
+           } */
 
            memset(&hints, 0, sizeof(struct addrinfo));
-           hints.ai_family = Af_INET;    /* Allow IPv4*/
+           hints.ai_family = AF_INET;    /* Allow IPv4*/
            hints.ai_socktype = SOCK_DGRAM; /* Datagram socket */
            hints.ai_flags = AI_PASSIVE;    /* For wildcard IP address */
            hints.ai_protocol = 0;          /* Any protocol */
