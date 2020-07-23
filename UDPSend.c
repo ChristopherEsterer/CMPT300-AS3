@@ -64,7 +64,7 @@ void* SendThread(void* unused)
            }
 
            memset(&hints, 0, sizeof(struct addrinfo));
-           hints.ai_family = AF_UNSPEC;    /* Allow IPv4 or IPv6 */
+           hints.ai_family = Af_INET;    /* Allow IPv4*/
            hints.ai_socktype = SOCK_DGRAM; /* Datagram socket */
            hints.ai_flags = AI_PASSIVE;    /* For wildcard IP address */
            hints.ai_protocol = 0;          /* Any protocol */
