@@ -113,10 +113,14 @@ void* SendThread(void* unused)
 	socketDescriptor = socket(PF_INET, SOCK_DGRAM, 0);
 
 	// Bind the socket to the port (PORT) that we specify
-    int bindError =0;
+    int bindError = 0;
 	//bindError = bind (socketDescriptor, (struct sockaddr*) &sin, sizeof(sin));
-	printf("SBind Err: (%d)\n",bindError);
-    printf("Sport Numb: (%d)\n",sin.sin_port);
+	if (bindError == -1){
+        printf("Send bind error: (%d)\n",bindError);
+        printf("Port Numb: (%d)\n",sin.sin_port);
+    }
+    //printf("SBind Err: (%d)\n",bindError);
+    
 	while (1) {
 
         pthread_cond_wait(&s_syncOkToSendCondVar, &s_syncOkToSendMutex); // wait condition
@@ -131,9 +135,12 @@ void* SendThread(void* unused)
 		static char* messageTx;
         messageTx = GetMessageFromOutputList(); // get output message from List
 		int sendError = 0;
+        
         sendError = sendto(socketDescriptor,messageTx, MSG_MAX_LEN, 0,(struct sockaddr *) &sin, sin_len);
-
-        printf("msg sent: %s (%d)\n", messageTx, sendError );
+        if (sendError == -1){
+            printf("sendto error: %s (%d)\n", messageTx, sendError ); 
+        }
+        //printf("msg sent: %s (%d)\n", messageTx, sendError );
 	}
     // NOTE NEVER EXECUTES BECEAUSE THREAD IS CANCELLED
 	return NULL;
@@ -164,14 +171,7 @@ void SenderSignalMessage(void) // External Signal Call to tell the Sender to sen
     pthread_mutex_unlock(&s_syncOkToSendMutex);
 }
 
-void SenderChangeDynamicMessage(char* newDynamic)
-{
-    //pthread_mutex_lock(&dynamicMsgMutex);
-    //{
-    //    strncpy(dynamicMessage, newDynamic, DYNAMIC_LEN);
-    //}
-    //pthread_mutex_unlock(&dynamicMsgMutex);
-}
+
 
 
 void SenderShutdown(void)
