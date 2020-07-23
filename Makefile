@@ -1,6 +1,6 @@
 #makefile for Main folder. Has Git and build commands for CMPT As3
 
-CFLAGS = -Wall -g -std=c99 -D _POSIX_C_SOURCE=200809L -Werror
+CFLAGS = -Wall -g -D _POSIX_C_SOURCE=200809L -Werror
 
 all: build
 
