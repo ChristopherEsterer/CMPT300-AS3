@@ -37,7 +37,7 @@ void* PrinterThread(void* unused){
                 messageToPrint++;
                 fflush(stdout);
                 
-        }while (*messageToPrint != '\n'); 
+        }while (*messageToPrint != '\0'); 
 
         
         //while (messageCount > 0){

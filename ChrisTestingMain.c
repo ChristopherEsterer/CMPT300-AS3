@@ -41,7 +41,7 @@ int main(int argCount, char** args)
         scanf("%s", x);
         SetMessageToOutputList(x);
         SenderSignalMessage(); // signal Sender to send
-    }while(*x != '!');
+    }while(*x != '\n');
     //SignalPrintMsg();
     // Shutdown my modules
     //char x;
