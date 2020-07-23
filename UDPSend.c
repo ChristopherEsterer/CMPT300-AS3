@@ -33,7 +33,7 @@ static pthread_mutex_t s_syncOkToSendMutex = PTHREAD_MUTEX_INITIALIZER;
 void* SendThread(void* unused)
 {
     struct addrinfo *sendInfo, *p, hints;
-	// Address
+	//Address
 	//struct sockaddr_in sin;
 
 	//memset(&sin, 0, sizeof(sin));
