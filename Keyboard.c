@@ -27,8 +27,7 @@ void* KeyboardThread(void* unused)
             SenderSignalMessage(); // signal Sender to send
     }while( strcmp(x,"!\n"));
     
-    //printf("Keyboard: Exit triggered! \n");
-    ShutdownSignalMessage();
+    ShutdownSignalMessage(); // "!" typed to signal shutdown. signal the main thread to shut the threads down.
     
     return NULL;
 }

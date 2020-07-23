@@ -18,7 +18,6 @@
 #define MSG_MAX_LEN 1024
 #define PORT        22110
 
-//static pthread_mutex_t dynamicMsgMutex = PTHREAD_MUTEX_INITIALIZER; // implemented in the Protected list
 
 char* portRNumber;
 char* addressNumber;
@@ -27,9 +26,7 @@ char* addressNumber;
 
 static pthread_t threadPID;
 static int socketDescriptor;
-//static char* s_rxMessage;
 
-static char* dynamicMessage; // not sure if needed
 
 void* receiveThread(void* unused)
 { 
@@ -69,7 +66,6 @@ void* receiveThread(void* unused)
 
 	// Bind the socket to the port (PORT) that we specify
     int bindError = 0;
-	//bindError = bind (socketDescriptor, (struct sockaddr*) &sin, sizeof(sin));//this works
     bindError = bind (socketDescriptor,  receiveInfo->ai_addr , receiveInfo->ai_addrlen);
 	if (bindError == -1){
     printf("Bind Error Receive:(%d) \n", bindError);
@@ -91,18 +87,8 @@ void* receiveThread(void* unused)
         
         }
         
-        // Do something amazing with the received message!
-       /* *** changed to use the protected list
-        pthread_mutex_lock(&dynamicMsgMutex);
-        {
-            printf("%s >> %s: %s\n", dynamicMessage, s_rxMessage, messageRx);
-        }
-        pthread_mutex_unlock(&dynamicMsgMutex);
-        */
-
-       // printf("Receive: message = %s \n", messageRx);
         
-        if( !strcmp(messageRx,"\0") )
+        if( !strcmp(messageRx,"\0") ) // check for shutdown (might need tweek)
         {
             printf("Receive: Shutdown!\n");
             ShutdownSignalMessage();
@@ -111,8 +97,6 @@ void* receiveThread(void* unused)
         
         SetMessageToInputList(messageRx);
         Printer_signalMessage();
-       // char* tempMsg = GetMessageFromInputList();
-        //printf("msg from List = %s \n", tempMsg );
 	}
     // NOTE NEVER EXECUTES BECEAUSE THREAD IS CANCELLED
 	return NULL;
@@ -121,13 +105,9 @@ void* receiveThread(void* unused)
 
 void Receiver_init(char* addr, char* portNumb)
 {
-    dynamicMessage = malloc(DYNAMIC_LEN);
-    
-    //InitLists(); // Inisizeof", portNumb);
     addressNumber = addr;
     portRNumber = portNumb;
-    //memcpy( portRNumber, portNumb, strlen(portNumb));
-    //s_rxMessage = rxMessage;
+
     pthread_create(
         &threadPID,         // PID (by pointer)
         NULL,               // Attributes
@@ -135,20 +115,12 @@ void Receiver_init(char* addr, char* portNumb)
         NULL);
 }
 
-void Receiver_changeDynamicMessage(char* newDynamic)
-{
-    //pthread_mutex_lock(&dynamicMsgMutex);
-    //{
-    //    strncpy(dynamicMessage, newDynamic, DYNAMIC_LEN);
-    //}
-    //pthread_mutex_unlock(&dynamicMsgMutex);
-}
 
 
 void Receiver_shutdown(void)
 {   
 
-    //freeaddrinfo(receiveInfo);
+    //freeaddrinfo(receiveInfo); // to do
 
     // Cancel thread
     pthread_cancel(threadPID);
@@ -157,11 +129,5 @@ void Receiver_shutdown(void)
     pthread_join(threadPID, NULL);
 
     // Cleanup memory
-    /*
-    pthread_mutex_lock(&dynamicMsgMutex);
-    {
-        free(dynamicMessage);
-    }
-    pthread_mutex_unlock(&dynamicMsgMutex);
-    */
+    //freeaddrinfo(receiveInfo); // to do
 }

@@ -16,16 +16,11 @@
 #define MSG_MAX_LEN 1024
 #define PORT        22110
 
-//static pthread_mutex_t dynamicMsgMutex = PTHREAD_MUTEX_INITIALIZER; // implemented in the Protected list
-
 char* addressNumber;
 char* portNumber;
 
 static pthread_t threadPID;
 static int socketDescriptor;
-//static char* s_rxMessage;
-
-static char* dynamicMessage; // not sure if needed
 
 static pthread_cond_t s_syncOkToSendCondVar = PTHREAD_COND_INITIALIZER;
 static pthread_mutex_t s_syncOkToSendMutex = PTHREAD_MUTEX_INITIALIZER;
@@ -35,12 +30,6 @@ void* SendThread(void* unused)
 {
     struct addrinfo *sendInfo, *p, hints;
 	//Address
-	//struct sockaddr_in sin;
-
-	//memset(&sin, 0, sizeof(sin));
-	//sin.sin_family = AF_INET;                   // Connection may be from network
-	//sin.sin_addr.s_addr = htonl(INADDR_ANY);    // Host to Network long
-	//sin.sin_port = htons(portNumber);                 // Host to Network short ** should all be changed to network to host as its reciveing
 	
     memset(&hints, 0, sizeof hints); // make sure the struct is empty
     hints.ai_family = PF_INET;     // don't care IPv4 or IPv6
@@ -78,40 +67,21 @@ void* SendThread(void* unused)
 	// Create the socket for IPv4 UDP
 	socketDescriptor = socket(PF_INET, SOCK_DGRAM, 0);
 
-	// Bind the socket to the port (PORT) that we specify
-    //int bindError = 0;
-	//bindError = bind (socketDescriptor, (struct sockaddr*) &sin, sizeof(sin));
-	//if (bindError == -1){
-    //    printf("Send bind error: (%d)\n",bindError);
-    //   printf("Port Numb: (%d)\n",sin.sin_port);
-    //}
-    //printf("SBind Err: (%d)\n",bindError);
     
 	while (1) {
 
-        pthread_cond_wait(&s_syncOkToSendCondVar, &s_syncOkToSendMutex); // wait condition
+        pthread_cond_wait(&s_syncOkToSendCondVar, &s_syncOkToSendMutex); // wait condition. Will get triggered externaly (by keyboard)
 
-
-		// Send the data (blocking)
-		// Will change sin (the address) to be the address of the client.
-		// Note: sin passes information in and out of call!
-		//struct sockaddr_in sinRemote;
-		//unsigned int sin_len = sizeof(sinRemote);
-
-		static char* messageTx;
+        static char* messageTx;
         messageTx = GetMessageFromOutputList(); // get output message from List
-		int sendError = 0;
-        
-       // sendError = sendto(socketDescriptor,messageTx, MSG_MAX_LEN, 0, sendInfo->ai_addr, sizeof(sendInfo->ai_addr));
-        if (sendError == -1){
-            printf("sendto error: %s (%d)\n", messageTx, sendError ); 
-        }
-
+        int sendError = 0;
+    
         if ((sendError = sendto(socketDescriptor, messageTx, strlen(messageTx), 0, p->ai_addr, p->ai_addrlen)) == -1) {
-        perror("talker: sendto");
+            printf("sendto error");
+    
         exit(1);
-    }
-        //printf("msg sent: %s (%d)\n", messageTx, sendError );
+        }
+        
 	}
     // NOTE NEVER EXECUTES BECEAUSE THREAD IS CANCELLED
 	return NULL;
@@ -120,13 +90,10 @@ void* SendThread(void* unused)
 
 void SenderInit(char* addr , char* portNum)
 {
-    dynamicMessage = malloc(DYNAMIC_LEN);
-    
+
     portNumber = portNum;
     addressNumber = addr;
-    //InitLists(); // Initalized the lists for memory allocation **shuold both lists be initialized once? So theyll be passed to UDPSend.c? Or better to initalize seperately?
-
-   // s_rxMessage = rxMessage;
+    
     pthread_create(
         &threadPID,         // PID (by pointer)
         NULL,               // Attributes
@@ -155,11 +122,5 @@ void SenderShutdown(void)
     pthread_join(threadPID, NULL);
 
     // Cleanup memory
-    /*
-    pthread_mutex_lock(&dynamicMsgMutex);
-    {
-        free(dynamicMessage);
-    }
-    pthread_mutex_unlock(&dynamicMsgMutex);
-    */
+ 
 }
