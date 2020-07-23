@@ -58,8 +58,7 @@ void* receiveThread(void* unused)
         
         //exit(1);
     }
-    printf("getaddrinfo Error Receive:(%d) \n", addrError);
-
+    
 	// Create the socket for UDP
 	//socketDescriptor = socket(receiveInfo->ai_family, SOCK_DGRAM, receiveInfo->ai_protocol); // this doesnt need?
     socketDescriptor = socket(PF_INET, SOCK_DGRAM, 0);// this works
