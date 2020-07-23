@@ -1,6 +1,6 @@
 // Main .c file for CMPT 300 Assigment # 3.
 // Coded By Christopher Esterer (301116353)
-// and Gurjeet Singh Gill (301255148)
+// and Gurjeet ** Fill in **
 // Program s-talk, talks to another instance of itself over UDP
 // sends data that is typed into one instance to the other instance and displays.
 // program call is in the form:

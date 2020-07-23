@@ -3,10 +3,6 @@
 #include "ProtectedList.h" // include the protected list module
 #include "UDPSend.h"
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <netdb.h>
@@ -18,13 +14,11 @@
 #define DYNAMIC_LEN 128
 #define MSG_MAX_LEN 1024
 #define PORT        22110
-#define BUF_SIZE 500
-
-
 
 //static pthread_mutex_t dynamicMsgMutex = PTHREAD_MUTEX_INITIALIZER; // implemented in the Protected list
 
-int portNumber = 0;
+char* addressNumber;
+char* portNumber;
 
 static pthread_t threadPID;
 static int socketDescriptor;
@@ -38,87 +32,58 @@ static pthread_mutex_t s_syncOkToSendMutex = PTHREAD_MUTEX_INITIALIZER;
 
 void* SendThread(void* unused)
 {
-    // Dynamically allocate a message
-    /*
-    pthread_mutex_lock(&dynamicMsgMutex);
-    {
-        strcpy(dynamicMessage, "Dynamic!");
-    }
-    pthread_mutex_unlock(&dynamicMsgMutex);
-    */
+    struct addrinfo *sendInfo, *p, hints;
+	//Address
+	//struct sockaddr_in sin;
 
-
-    //setupfor network connection
-    //ie:get adddrinfo setup
-    struct addrinfo hints;
-           struct addrinfo *result, *rp;
-           int sfd, s, j;
-           size_t len;
-           ssize_t nread;
-           char buf[BUF_SIZE];
-        
-            //error checking i just commented out
-           /* if (argc < 3) {
-               fprintf(stderr, "Usage: %s host port msg...\n", argv[0]);
-               exit(EXIT_FAILURE);
-           } */
-
-           /* Obtain address(es) matching host/port */
-
-           memset(&hints, 0, sizeof(struct addrinfo));
-           hints.ai_family = AF_INET;    /* Allow IPv4 only */
-           hints.ai_socktype = SOCK_DGRAM; /* Datagram socket */
-           hints.ai_flags = 0;
-           hints.ai_protocol = 0;          /* Any protocol */
-
-           s = getaddrinfo(argv[1], argv[2], &hints, &result);
-           if (s != 0) {
-               fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
-               exit(EXIT_FAILURE);
-           }
-
-           /* getaddrinfo() returns a list of address structures.
-              Try each address until we successfully connect(2).
-              If socket(2) (or connect(2)) fails, we (close the socket
-              and) try the next address. */
-
-           for (rp = result; rp != NULL; rp = rp->ai_next) {
-               sfd = socket(rp->ai_family, rp->ai_socktype,
-                            rp->ai_protocol);
-               if (sfd == -1)
-                   continue;
-
-               if (connect(sfd, rp->ai_addr, rp->ai_addrlen) != -1)
-                   break;                  /* Success */
-
-               close(sfd);
-           }
-
-           if (rp == NULL) {               /* No address succeeded */
-               fprintf(stderr, "Could not connect\n");
-               exit(EXIT_FAILURE);
-           }
-
-           freeaddrinfo(result);           /* No longer needed */
-
-
-	// Address
-    struct sockaddr_in sin;
-	memset(&sin, 0, sizeof(sin));
-	sin.sin_family = AF_INET;                   // Connection may be from network
-	sin.sin_addr.s_addr = htonl(INADDR_ANY);    // Host to Network long
-	sin.sin_port = htons(portNumber);                 // Host to Network short ** should all be changed to network to host as its reciveing
+	//memset(&sin, 0, sizeof(sin));
+	//sin.sin_family = AF_INET;                   // Connection may be from network
+	//sin.sin_addr.s_addr = htonl(INADDR_ANY);    // Host to Network long
+	//sin.sin_port = htons(portNumber);                 // Host to Network short ** should all be changed to network to host as its reciveing
 	
+    memset(&hints, 0, sizeof hints); // make sure the struct is empty
+    hints.ai_family = PF_INET;     // don't care IPv4 or IPv6
+    hints.ai_socktype = SOCK_DGRAM; // TCP stream sockets
+    hints.ai_flags = AI_PASSIVE;     // fill in my IP for me
+
+    int addrError = 0;
+    if ((addrError = getaddrinfo(addressNumber, portNumber, &hints, &sendInfo)) != 0) {
+        
+        fprintf(stderr, "Send getaddrinfo error: %s\n", gai_strerror(addrError));
+        
+        //exit(1);
+    }
+
+    // loop through all the results and make a socket
+    for(p = sendInfo; p != NULL; p = p->ai_next) {
+        if ((socketDescriptor = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) {
+            perror("talker: socket");
+            continue;
+        }
+
+        break;
+    }
+
+    if (p == NULL) {
+        fprintf(stderr, "talker: failed to create socket\n");
+    }
+
+
+
+    freeaddrinfo(sendInfo);
+
+
+
 	// Create the socket for IPv4 UDP
 	socketDescriptor = socket(PF_INET, SOCK_DGRAM, 0);
 
 	// Bind the socket to the port (PORT) that we specify
-    int bindError = 0;
+    //int bindError = 0;
 	//bindError = bind (socketDescriptor, (struct sockaddr*) &sin, sizeof(sin));
-	if (bindError == -1){
-        printf("Send bind error: (%d)\n",bindError);
-        printf("Port Numb: (%d)\n",sin.sin_port);
-    }
+	//if (bindError == -1){
+    //    printf("Send bind error: (%d)\n",bindError);
+    //   printf("Port Numb: (%d)\n",sin.sin_port);
+    //}
     //printf("SBind Err: (%d)\n",bindError);
     
 	while (1) {
@@ -129,17 +94,22 @@ void* SendThread(void* unused)
 		// Send the data (blocking)
 		// Will change sin (the address) to be the address of the client.
 		// Note: sin passes information in and out of call!
-		struct sockaddr_in sinRemote;
-		unsigned int sin_len = sizeof(sinRemote);
+		//struct sockaddr_in sinRemote;
+		//unsigned int sin_len = sizeof(sinRemote);
 
 		static char* messageTx;
         messageTx = GetMessageFromOutputList(); // get output message from List
 		int sendError = 0;
         
-        sendError = sendto(socketDescriptor,messageTx, MSG_MAX_LEN, 0,(struct sockaddr *) &sin, sin_len);
+       // sendError = sendto(socketDescriptor,messageTx, MSG_MAX_LEN, 0, sendInfo->ai_addr, sizeof(sendInfo->ai_addr));
         if (sendError == -1){
             printf("sendto error: %s (%d)\n", messageTx, sendError ); 
         }
+
+        if ((sendError = sendto(socketDescriptor, messageTx, strlen(messageTx), 0, p->ai_addr, p->ai_addrlen)) == -1) {
+        perror("talker: sendto");
+        exit(1);
+    }
         //printf("msg sent: %s (%d)\n", messageTx, sendError );
 	}
     // NOTE NEVER EXECUTES BECEAUSE THREAD IS CANCELLED
@@ -147,11 +117,12 @@ void* SendThread(void* unused)
 }
 
 
-void SenderInit(int portNum)
+void SenderInit(char* addr , char* portNum)
 {
     dynamicMessage = malloc(DYNAMIC_LEN);
     
     portNumber = portNum;
+    addressNumber = addr;
     //InitLists(); // Initalized the lists for memory allocation **shuold both lists be initialized once? So theyll be passed to UDPSend.c? Or better to initalize seperately?
 
    // s_rxMessage = rxMessage;

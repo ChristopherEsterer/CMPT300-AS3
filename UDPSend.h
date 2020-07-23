@@ -14,7 +14,7 @@ void UDPThreadCreate( pList, conVar, portinfo); // Creates thread for UDP send *
 
 // Start background send thread
 // void Receiver_init(char* rxMessage, pthread_mutex_t sharedMutexWithOtherThread);
-void SenderInit(int port);
+void SenderInit(char* addr , char* port);
 void* SendThread(void* unused);
 // Set the dynamic message -- Threadsafe
 void SenderChangeDynamicMessage(char* txMessage);

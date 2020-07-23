@@ -37,17 +37,32 @@ void KeyboardInit(void)
     
     pthread_create(
         &threadKeyboard,         // PID (by pointer)
-        NULL,                    // Attributes
-        KeyboardThread,          // Function
+        NULL,               // Attributes
+        KeyboardThread,      // Function
         NULL);
 }
 
 void KeyboardShutdown(void)
 {
-    // Cancel thread
+        // Cancel thread
     pthread_cancel(threadKeyboard);
 
     // Waits for thread to finish
     pthread_join(threadKeyboard, NULL);
 
+    // Cleanup memory
 }
+//protectedList* Outlist;
+//convar* sendConVar;
+//inPutMain()
+// This will stdin and save to a temp string (char*)
+//outlist->SetMessageToList(tempMsg);
+//signal the UDPSend to send a message from the outlist
+//sendConVar.signal()
+//{
+//
+//InitThread(protectedList outList){ // like all the other threads
+//save the outList pointer
+// create a thread and call the main function
+//
+//} 

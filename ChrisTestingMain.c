@@ -14,7 +14,7 @@
 static pthread_cond_t s_syncOkToShutdownCondVar = PTHREAD_COND_INITIALIZER;
 static pthread_mutex_t s_syncOkToShutdownMutex = PTHREAD_MUTEX_INITIALIZER;
 
-int senderPort = 0;
+char* senderPort;
 char* receiverPort;
 char* address = "10.0.0.168";
 
@@ -24,7 +24,7 @@ int main(int argCount, char** args)
 	//for (int i = 0; i < argCount; i++) {
 	//	printf("Arg %d: %s\n", i, args[i]);
 	//}
-    senderPort = atoi(args[1]);
+    senderPort = args[1];
     //receiverPort = atoi(args[2]);
 
     receiverPort = args[2];
@@ -45,7 +45,7 @@ int main(int argCount, char** args)
     //printf("Printer..\n");
     Printer_init();
     //printf("Sender..\n");
-    SenderInit(senderPort);
+    SenderInit(address ,senderPort);
     //printf("Keyboard...\n");
     KeyboardInit();
 

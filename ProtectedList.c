@@ -22,6 +22,8 @@ static pthread_mutex_t OUTlistLockMutex = PTHREAD_MUTEX_INITIALIZER;
 static List* inputList;  // a list for input messages (messages to be printed)
 static List* outputList; // a list for output messages (messages to be sent)
 
+//static char* tempMsg; // dynamic message for string copy
+
 char* GetMessageFromInputList(void) // pops a message from the tail of the input list. protected
 {
     char* tempMsg; // make a temporary message holder
@@ -42,8 +44,9 @@ void GetMessageFromInputList2(char* holder) // pops a message from the tail of t
     pthread_mutex_lock(&INlistLockMutex); //lock Inputlist
     {
         tempMsg = List_trim(inputList);
-        strncpy(holder, tempMsg , strlen(tempMsg) );
+        strncpy(holder, tempMsg , strlen(tempMsg) ); // ***new
         
+        //tempMsg = List_trim(inputList); // returns the tail of the list and removes it
     }
     pthread_mutex_unlock(&INlistLockMutex);//unlock InputList
 
@@ -66,9 +69,14 @@ char* GetMessageFromOutputList(void) // pops a message from the tail of the outp
 
 void SetMessageToInputList(char* msg)
 {
-    
+    //int error;
+    //char* tempMsg = msg; // make a temporary message holder
     pthread_mutex_lock(&INlistLockMutex); //lock Inputlist
     {
+       // error = 
+       //tempMsg =
+       //strncpy(tempMsg, msg, strlen(msg)); //**new
+       //List_prepend(inputList, tempMsg); // old
        List_prepend(inputList, msg);
     }
     pthread_mutex_unlock(&INlistLockMutex);//unlock InputList
@@ -89,6 +97,7 @@ void SetMessageToOutputList(char* msg)
 void SignalPrintMsg(void)  //char* msg) // simple printf function
 {
     Printer_signalMessage(); // Printer call to tell its convar to run. Printer holds the mutex for the convar.
+   // printf("The list says signaling print/n");
 }
 int GetListSize(void)
 {
@@ -98,6 +107,7 @@ return i;
 }
 void InitLists(void)// allocate the memory for the lists
 {   
+    //tempMsg = malloc(DYNAMIC_LEN);
     
     pthread_mutex_lock(&INlistLockMutex); //lock Inputlist
     {
