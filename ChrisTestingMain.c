@@ -6,6 +6,7 @@
 #include "Print.h"
 #include "ProtectedList.h"
 #include <string.h>
+#include "Keyboard.h"
 
 int senderPort = 0;
 int receiverPort = 0;
@@ -34,10 +35,12 @@ int main(int argCount, char** args)
     Printer_init();
     printf("Sender..\n");
     SenderInit(senderPort);
+    printf("Keyboard...\n");
+    KeyboardInit();
     // Wait for user input
-    char x[1024];
+   /* char x[1024];
     //string x;
-    while(1){
+   while(1){
         printf("Enter something to send: \n");
         //char x[1024];
         do{
@@ -54,9 +57,12 @@ int main(int argCount, char** args)
    // printf("Enter something to kill the receive thread\n");
     //char x;
     //scanf("%c", &x);
+    */
+    while(1);
     Receiver_shutdown();
     Printer_shutdown();
     SenderShutdown();
+    KeyboardShutdown();
     printf("done\n");
     return 0;
 }
