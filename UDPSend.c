@@ -11,6 +11,11 @@
 #include <pthread.h>
 #include <signal.h>
 
+//for getaddrinfo
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+
 #define DYNAMIC_LEN 128
 #define MSG_MAX_LEN 1024
 #define PORT        22110
@@ -40,8 +45,12 @@ void* SendThread(void* unused)
     pthread_mutex_unlock(&dynamicMsgMutex);
     */
 
+
+    //setupfor network connection
+
+
 	// Address
-	struct sockaddr_in sin;
+    struct sockaddr_in sin;
 	memset(&sin, 0, sizeof(sin));
 	sin.sin_family = AF_INET;                   // Connection may be from network
 	sin.sin_addr.s_addr = htonl(INADDR_ANY);    // Host to Network long
