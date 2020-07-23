@@ -50,8 +50,10 @@ void* receiveThread(void* unused)
 	// Bind the socket to the port (PORT) that we specify
     int bindError = 0;
 	bindError = bind (socketDescriptor, (struct sockaddr*) &sin, sizeof(sin));
-	printf("RBind Err:(%d) \n", bindError);
-    printf("Rport Numb: (%d)\n",sin.sin_port);
+	if (bindError == -1){
+    printf("Bind Error Receive:(%d) \n", bindError);
+    printf("Port Numb: (%d)\n",sin.sin_port);
+    }
 	while (1) {
 		// Get the data (blocking)
 		// Will change sin (the address) to be the address of the client.
@@ -72,11 +74,11 @@ void* receiveThread(void* unused)
         pthread_mutex_unlock(&dynamicMsgMutex);
         */
 
-        printf("Receive: message = %s \n", messageRx);
+       // printf("Receive: message = %s \n", messageRx);
         
         if( !strcmp(messageRx,"\0") )
         {
-            printf("Receive: Shutdown!\n");
+          //  printf("Receive: Shutdown!\n");
             ShutdownSignalMessage();
             return NULL;
         }
@@ -96,7 +98,7 @@ void Receiver_init(int portNumb)
     dynamicMessage = malloc(DYNAMIC_LEN);
     
     //InitLists(); // Initalized the lists for memory allocation **shuold both lists be initialized once? So theyll be passed to UDPSend.c? Or better to initalize seperately?
-    printf("Passed rPn = %d \n", portNumb);
+ //   printf("Passed rPn = %d \n", portNumb);
     portRNumber = portNumb;
     //s_rxMessage = rxMessage;
     pthread_create(

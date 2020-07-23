@@ -26,8 +26,10 @@ void* KeyboardThread(void* unused)
             SetMessageToOutputList(x);
             SenderSignalMessage(); // signal Sender to send
     }while( strcmp(x,"!\n"));
-    printf("Keyboard: Exit triggered! \n");
+    
+    //printf("Keyboard: Exit triggered! \n");
     ShutdownSignalMessage();
+    
     return NULL;
 }
 void KeyboardInit(void)
