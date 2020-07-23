@@ -66,14 +66,9 @@ char* GetMessageFromOutputList(void) // pops a message from the tail of the outp
 
 void SetMessageToInputList(char* msg)
 {
-    //int error;
-    //char* tempMsg = msg; // make a temporary message holder
+    
     pthread_mutex_lock(&INlistLockMutex); //lock Inputlist
     {
-       // error = 
-       //tempMsg =
-       //strncpy(tempMsg, msg, strlen(msg)); //**new
-       //List_prepend(inputList, tempMsg); // old
        List_prepend(inputList, msg);
     }
     pthread_mutex_unlock(&INlistLockMutex);//unlock InputList
@@ -94,7 +89,6 @@ void SetMessageToOutputList(char* msg)
 void SignalPrintMsg(void)  //char* msg) // simple printf function
 {
     Printer_signalMessage(); // Printer call to tell its convar to run. Printer holds the mutex for the convar.
-   // printf("The list says signaling print/n");
 }
 int GetListSize(void)
 {
@@ -104,7 +98,6 @@ return i;
 }
 void InitLists(void)// allocate the memory for the lists
 {   
-    //tempMsg = malloc(DYNAMIC_LEN);
     
     pthread_mutex_lock(&INlistLockMutex); //lock Inputlist
     {
