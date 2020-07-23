@@ -10,6 +10,7 @@
 #include <unistd.h>			// for close()
 #include <pthread.h>
 #include <signal.h>
+#include "ChrisTestingMain.h"
 
 #define DYNAMIC_LEN 128
 #define MSG_MAX_LEN 1024
@@ -71,7 +72,15 @@ void* receiveThread(void* unused)
         pthread_mutex_unlock(&dynamicMsgMutex);
         */
 
-        //printf("msg = %s \n", messageRx);
+        printf("Receive: message = %s \n", messageRx);
+        
+        if( !strcmp(messageRx,"\0") )
+        {
+            printf("Receive: Shutdown!\n");
+            ShutdownSignalMessage();
+            return NULL;
+        }
+        
         SetMessageToInputList(messageRx);
         Printer_signalMessage();
        // char* tempMsg = GetMessageFromInputList();

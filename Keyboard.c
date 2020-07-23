@@ -9,6 +9,8 @@
 #include "Keyboard.h" // this thread
 #include "ProtectedList.h"
 #include "UDPSend.h"
+#include "ChrisTestingMain.h"
+
 //Defines
 #define DYNAMIC_LEN 128
 pthread_t threadKeyboard;
@@ -16,18 +18,16 @@ pthread_t threadKeyboard;
 void* KeyboardThread(void* unused)
 {   
     char x[1024];
-    while(*x != '!'){
+    do{// != "!\n"){
         
-        //char x[1024];
-        //do{
+
             fgets(x,1024,stdin);
             
             SetMessageToOutputList(x);
             SenderSignalMessage(); // signal Sender to send
-        //}while(*x != '!');
-        
-    }
-    printf("Exit triggered! \n");
+    }while( strcmp(x,"!\n"));
+    printf("Keyboard: Exit triggered! \n");
+    ShutdownSignalMessage();
     return NULL;
 }
 void KeyboardInit(void)
