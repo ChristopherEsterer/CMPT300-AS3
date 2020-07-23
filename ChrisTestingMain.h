@@ -1,0 +1,2 @@
+
+void ShutdownSignalMessage(void);
