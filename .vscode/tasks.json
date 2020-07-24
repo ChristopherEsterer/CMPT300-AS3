@@ -1,0 +1,27 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "C/C++: gcc build active file",
+			"command": "/usr/bin/gcc",
+			"args": [
+				"-Wall -g -D _POSIX_C_SOURCE=200809L -Werror -ansi",
+				"instructorList.o UDPReceive.c UDPSend.c Print.c ProtectedList.c Keyboard.c ChrisTestingMain.c",
+				"-o",
+				"s-talk",
+				"-lpthread"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		}
+	]
+}

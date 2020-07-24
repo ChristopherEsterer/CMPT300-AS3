@@ -66,7 +66,7 @@ void Printer_init()
         NULL);
 }
 
-void Printer_shutdown(void)
+void PrinterShutdown(void)
 {
     // Cancel thread
     pthread_cancel(threadPrinter);

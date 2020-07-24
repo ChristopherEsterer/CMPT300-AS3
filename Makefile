@@ -1,6 +1,6 @@
 #makefile for Main folder. Has Git and build commands for CMPT As3
 
-CFLAGS = -Wall -g -std=c11 -D _POSIX_C_SOURCE=200809L -Werror
+CFLAGS = -Wall -g -std=c99 -D _POSIX_C_SOURCE=200809L -Werror
 
 all: build
 
@@ -38,3 +38,29 @@ runC:
 runG:
 	./TestChris 22111 csil-cpu7.cs.surrey.sfu.ca 22112
 
+runCT:
+	gnome-terminal -- ./TestChris 22111 10.0.0.168 22112
+	./TestChris 22112 10.0.0.168 22111
+
+# some mad long ones
+buildAndTest:
+	gcc $(CFLAGS) instructorList.o UDPReceive.c UDPSend.c Print.c ProtectedList.c Keyboard.c ChrisTestingMain.c -o s-talk -lpthread
+
+	gnome-terminal -- make remoteTest
+	
+	putty -P 24 cesterer@csil-cpu6.cs.surrey.sfu.ca
+	scp -P24 s-talk cesterer@csil-cpu5.cs.surrey.sfu.ca:~/cmpt300/
+	./s-talk 25011 cesterer@csil-cpu5 26011
+
+remoteTest:
+	putty -P 24 cesterer@csil-cpu5.cs.surrey.sfu.ca
+	./s-talk 26011 csil-cpu6.cs.surrey.sfu.ca 25011
+
+updateRemote:
+	gcc $(CFLAGS) instructorList.o UDPReceive.c UDPSend.c Print.c ProtectedList.c Keyboard.c ChrisTestingMain.c -o s-talk -lpthread
+	scp -P24 s-talk cesterer@csil-cpu5.cs.surrey.sfu.ca:~/cmpt300/
+
+	gnome-terminal -- scp -P24 s-talk cesterer@csil-cpu7.cs.surrey.sfu.ca:~/cmpt300/
+buildDebug:
+	gcc $(CFLAGS) instructorList.o UDPReceive.c UDPSend.c Print.c ProtectedList.c Keyboard.c ChrisTestingMain.c -o s-talk -lpthread
+	./s-talk 27012 10.0.0.168 27011

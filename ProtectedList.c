@@ -96,7 +96,7 @@ int i = 0;
 i = List_count(inputList);
 return i;
 }
-void InitLists(void)// allocate the memory for the lists
+void ListInit(void)// allocate the memory for the lists
 {   
     
     pthread_mutex_lock(&INlistLockMutex); //lock Inputlist
@@ -108,6 +108,21 @@ void InitLists(void)// allocate the memory for the lists
     pthread_mutex_lock(&OUTlistLockMutex); //lock Outputlist
     {
     outputList = List_create();
+    }
+    pthread_mutex_unlock(&OUTlistLockMutex);//unlock Outputlist
+}
+void ListShutdown(void)
+{
+    // Cleanup memory
+    pthread_mutex_lock(&INlistLockMutex); //lock Inputlist
+    {
+    free(inputList);
+    }
+    pthread_mutex_unlock(&INlistLockMutex);//unlock InputList
+    
+    pthread_mutex_lock(&OUTlistLockMutex); //lock Outputlist
+    {
+    free(outputList);
     }
     pthread_mutex_unlock(&OUTlistLockMutex);//unlock Outputlist
 }

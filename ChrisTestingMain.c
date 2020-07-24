@@ -16,18 +16,19 @@ static pthread_mutex_t s_syncOkToShutdownMutex = PTHREAD_MUTEX_INITIALIZER;
 
 char* senderPort;
 char* receiverPort;
-char* address = "10.0.0.168";
+char* address;
 
 int main(int argCount, char** args)
 {
-
-    senderPort = args[1];
-    receiverPort = args[3];
+    //s-talk [my port number] [remote machine name] [remote port number]
+    
+    receiverPort = args[1];
     address = args[2];
+    senderPort = args[3];
 
-    InitLists(); // Should be called first.
+    ListInit(); // Should be called first.
 
-    Receiver_init(address ,receiverPort);
+    ReceiverInit(address ,receiverPort);
     Printer_init();
     SenderInit(address ,senderPort);
     KeyboardInit();
@@ -56,9 +57,10 @@ void ShutdownSignalMessage(void) // External Signal Call to tell the Sender to s
 
 void MainShutdown(void) //shutdown subrouttine
 {
-    Receiver_shutdown();
-    Printer_shutdown();
+    ReceiverShutdown();
+    PrinterShutdown();
     SenderShutdown();
     KeyboardShutdown();
-    
+    ListShutdown();
+
 }

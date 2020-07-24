@@ -12,6 +12,10 @@
 #include <pthread.h>
 #include <signal.h>
 
+#include <sys/types.h>
+#include <sys/socket.h>
+
+
 #define DYNAMIC_LEN 128
 #define MSG_MAX_LEN 1024
 #define PORT        22110

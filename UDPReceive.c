@@ -2,6 +2,7 @@
 // Some code supplied from workshops
 #include "ProtectedList.h" // include the protected list module
 #include "UDPReceive.h"
+#include "ChrisTestingMain.h"// for shutdown signal from sender
 #include "Print.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,14 +11,15 @@
 #include <unistd.h>			// for close()
 #include <pthread.h>
 #include <signal.h>
-#include "ChrisTestingMain.h"
+
 #include <sys/types.h>
 #include <sys/socket.h>
+
 
 #define DYNAMIC_LEN 128
 #define MSG_MAX_LEN 1024
 #define PORT        22110
-  
+
 
 char* portRNumber;
 char* addressNumber;
@@ -28,9 +30,11 @@ static pthread_t threadPID;
 static int socketDescriptor;
 
 
-void* receiveThread(void* unused)
+void* ReceiveThread(void* unused)
 { 
-    struct addrinfo *receiveInfo, *p, hints;
+    struct addrinfo *receiveInfo;
+    struct addrinfo *p;
+    struct addrinfo hints;
 
 	// Address
     int addrError = 0;
@@ -53,7 +57,6 @@ void* receiveThread(void* unused)
         
         fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(addrError));
         
-        //exit(1);
     }
     
     // loop through all the results and make a socket
@@ -76,10 +79,11 @@ void* receiveThread(void* unused)
 
 	// Bind the socket to the port (PORT) that we specify
     int bindError = 0;
-    bindError = bind (socketDescriptor,  receiveInfo->ai_addr , receiveInfo->ai_addrlen);
+    bindError = bind(socketDescriptor, (const struct sockaddr*) (receiveInfo->ai_addr) ,(size_t) (receiveInfo->ai_addrlen));
 	if (bindError == -1){
     printf("Bind Error Receive:(%d) \n", bindError);
     printf("Port Numb: (%s)\n",receiveInfo->ai_addr->sa_data);
+    printf("addrInfo : %s : %s \n" , addressNumber , portRNumber );
     }
     int recvError = 0;
 	while (1) {
@@ -113,21 +117,17 @@ void* receiveThread(void* unused)
 }
 
 
-void Receiver_init(char* addr, char* portNumb)
+void ReceiverInit(char* addr, char* portNumb)
 {
     addressNumber = addr;
     portRNumber = portNumb;
 
-    pthread_create(
-        &threadPID,         // PID (by pointer)
-        NULL,               // Attributes
-        receiveThread,      // Function
-        NULL);
+    pthread_create(&threadPID ,NULL ,ReceiveThread ,NULL );
 }
 
 
 
-void Receiver_shutdown(void)
+void ReceiverShutdown(void)
 {   
 
     //freeaddrinfo(receiveInfo); // to do
