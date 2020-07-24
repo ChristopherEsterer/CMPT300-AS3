@@ -4,7 +4,7 @@
 #define _PRINTER_H_
 
 
-void PrintThreadCreate(void); // 
+void PrintThreadCreate(void); // Initialize Print threat
 void Printer_init(void); // Initialize thread call
 void PrinterShutdown(void); // Printer Shutdown
 void Printer_signalMessage(void); // Mutex lock for the condition variable. This is the external signal call
