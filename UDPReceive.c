@@ -17,7 +17,7 @@
 #define DYNAMIC_LEN 128
 #define MSG_MAX_LEN 1024
 #define PORT        22110
-
+  
 
 char* portRNumber;
 char* addressNumber;

@@ -1,6 +1,6 @@
 #makefile for Main folder. Has Git and build commands for CMPT As3
 
-CFLAGS = -Wall -g -std=c99 -D _POSIX_C_SOURCE=200809L -Werror
+CFLAGS = -Wall -g -std=c11 -D _POSIX_C_SOURCE=200809L -Werror
 
 all: build
 
@@ -14,8 +14,11 @@ buildCTest:
 run: build
 	./demo_conditions
 
+valgrindCT: buildCTest
+	valgrind --leak-check=full ./TestChris
+
 valgrind: build
-	valgrind --leak-check=full ./demo_conditions
+	valgrind --leak-check=full ./demo_conditions	
 
 clean:
 	rm -f demo_conditions
