@@ -68,7 +68,7 @@ void* receiveThread(void* unused)
 
 	// Create the socket for UDP
 	//socketDescriptor = socket(receiveInfo->ai_family, SOCK_DGRAM, receiveInfo->ai_protocol); // this doesnt need?
-    socketDescriptor = socket(PF_INET, SOCK_DGRAM, 0);// this works
+    //socketDescriptor = socket(PF_INET, SOCK_DGRAM, 0);// this works
 	
     if (socketDescriptor == -1){
         printf("socket Error Receive:(%d) \n", socketDescriptor);
