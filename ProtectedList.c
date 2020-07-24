@@ -24,20 +24,20 @@ static List* outputList; // a list for output messages (messages to be sent)
 
 char* GetMessageFromInputList(void) // pops a message from the tail of the input list. protected
 {
-    char* tempMsg; // make a temporary message holder
+    char* tempMsg; //make a temporary message holder
 
     pthread_mutex_lock(&INlistLockMutex); //lock Inputlist
     {
-        tempMsg = List_trim(inputList); // returns the tail of the list and removes it
+        tempMsg = List_trim(inputList); //returns the tail of the list and removes it
     }
-    pthread_mutex_unlock(&INlistLockMutex);//unlock InputList
+    pthread_mutex_unlock(&INlistLockMutex); //unlock InputList
 
     
-    return tempMsg; // return the temp message
+    return tempMsg; //return the temp message
 }
-void GetMessageFromInputList2(char* holder) // pops a message from the tail of the input list. protected
+void GetMessageFromInputList2(char* holder) //pops a message from the tail of the input list. protected
 {
-    char* tempMsg; // make a temporary message holder
+    char* tempMsg; //make a temporary message holder
 
     pthread_mutex_lock(&INlistLockMutex); //lock Inputlist
     {
@@ -71,7 +71,7 @@ void SetMessageToInputList(char* msg)
     {
        List_prepend(inputList, msg);
     }
-    pthread_mutex_unlock(&INlistLockMutex);//unlock InputList
+    pthread_mutex_unlock(&INlistLockMutex); //unlock InputList
     
     
     return;
@@ -82,7 +82,7 @@ void SetMessageToOutputList(char* msg)
     {
         List_prepend(outputList, msg);
     }
-    pthread_mutex_unlock(&OUTlistLockMutex);//unlock Outputlist
+    pthread_mutex_unlock(&OUTlistLockMutex); //unlock Outputlist
 
     return;
 }
@@ -101,13 +101,13 @@ void ListInit(void)// allocate the memory for the lists
     
     pthread_mutex_lock(&INlistLockMutex); //lock Inputlist
     {
-    inputList = List_create();
+        inputList = List_create();
     }
     pthread_mutex_unlock(&INlistLockMutex);//unlock InputList
     
     pthread_mutex_lock(&OUTlistLockMutex); //lock Outputlist
     {
-    outputList = List_create();
+        outputList = List_create();
     }
     pthread_mutex_unlock(&OUTlistLockMutex);//unlock Outputlist
 }
@@ -116,13 +116,13 @@ void ListShutdown(void)
     // Cleanup memory
     pthread_mutex_lock(&INlistLockMutex); //lock Inputlist
     {
-    free(inputList);
+        free(inputList);
     }
-    pthread_mutex_unlock(&INlistLockMutex);//unlock InputList
+    pthread_mutex_unlock(&INlistLockMutex); //unlock InputList
     
     pthread_mutex_lock(&OUTlistLockMutex); //lock Outputlist
     {
-    free(outputList);
+        free(outputList);
     }
     pthread_mutex_unlock(&OUTlistLockMutex);//unlock Outputlist
 }
