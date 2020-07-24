@@ -30,7 +30,7 @@ static int socketDescriptor;
 
 void* receiveThread(void* unused)
 { 
-    struct addrinfo *receiveInfo, hints;
+    struct addrinfo *receiveInfo, *p, hints;
 
 	// Address
     int addrError = 0;
@@ -56,6 +56,16 @@ void* receiveThread(void* unused)
         //exit(1);
     }
     
+    // loop through all the results and make a socket
+    for(p = receiveInfo; p != NULL; p = p->ai_next) {
+        if ((socketDescriptor = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) {
+            perror("talker: socket");
+            continue;
+        }
+
+        break;
+    }
+
 	// Create the socket for UDP
 	//socketDescriptor = socket(receiveInfo->ai_family, SOCK_DGRAM, receiveInfo->ai_protocol); // this doesnt need?
     socketDescriptor = socket(PF_INET, SOCK_DGRAM, 0);// this works

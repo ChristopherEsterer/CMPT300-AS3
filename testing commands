@@ -1,0 +1,7 @@
+putty -P 24 cesterer@csil-cpu5.cs.surrey.sfu.ca #ssh login
+putty -P 24 cesterer@csil-cpu6.cs.surrey.sfu.ca
+
+scp -P24 TestChris cesterer@csil-cpu5.cs.surrey.sfu.ca:~/cmpt300/
+
+./TestChris 22112 csil-cpu5.cs.surrey.sfu.ca 22111 #on one machine
+./TestChris 22111 csil-cpu7.cs.surrey.sfu.ca 22112 #on the other
