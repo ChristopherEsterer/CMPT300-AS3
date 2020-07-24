@@ -1,6 +1,7 @@
 // thread module for takeing input from keyboard.
 // Will wait for keyboard commands and push them to the input list
 // Will look for an escape key and signal the escape ConVar which will trigger main to exit
+
 #include <stdio.h> 
 #include <stdlib.h>
 #include <string.h>
@@ -18,7 +19,7 @@ pthread_t threadKeyboard;
 void* KeyboardThread(void* unused)
 {   
     char x[1024];
-    do{// != "!\n"){
+    do{
         
 
             fgets(x,1024,stdin);
