@@ -1,14 +1,14 @@
 // UDP Reveive module
 // Some code supplied from workshops
-#include "ProtectedList.h" // include the protected list module
+#include "ProtectedList.h" //include the protected list module
 #include "UDPReceive.h"
-#include "ChrisTestingMain.h"// for shutdown signal from sender
+#include "ChrisTestingMain.h" //for shutdown signal from sender
 #include "Print.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <netdb.h>
-#include <string.h>			// for strncmp()
-#include <unistd.h>			// for close()
+#include <string.h>			//for strncmp()
+#include <unistd.h>			//for close()
 #include <pthread.h>
 #include <signal.h>
 
@@ -40,16 +40,16 @@ void* ReceiveThread(void* unused)
     int addrError = 0;
 	struct sockaddr_in sin;
 
-    //struct addrinfo hints; // no idea
+    //struct addrinfo hints; //no idea ** ?
 	memset(&sin, 0, sizeof(sin));
-	sin.sin_family = AF_INET;                   // Connection may be from network
-	sin.sin_addr.s_addr = htonl(INADDR_ANY);    // Host to Network long
-	sin.sin_port = htons(atoi(portRNumber));                 // Host to Network short ** should all be changed to network to host as its reciveing
+	sin.sin_family = AF_INET;                       //Connection may be from network
+	sin.sin_addr.s_addr = htonl(INADDR_ANY);        //Host to Network long
+	sin.sin_port = htons(atoi(portRNumber));        //Host to Network short 
 	
-    memset(&hints, 0, sizeof hints); // make sure the struct is empty
-    hints.ai_family = PF_INET;     // don't care IPv4 or IPv6
-    hints.ai_socktype = SOCK_DGRAM; // TCP stream sockets
-    hints.ai_flags = AI_PASSIVE;     // fill in my IP for me
+    memset(&hints, 0, sizeof hints);    // make sure the struct is empty
+    hints.ai_family = PF_INET;          // don't care IPv4 or IPv6
+    hints.ai_socktype = SOCK_DGRAM;     // TCP stream sockets
+    hints.ai_flags = AI_PASSIVE;        // fill in my IP for me
     
     
 
@@ -59,7 +59,7 @@ void* ReceiveThread(void* unused)
         
     }
     
-    // loop through all the results and make a socket
+    //loop through all the results and make a socket
     for(p = receiveInfo; p != NULL; p = p->ai_next) {
         if ((socketDescriptor = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) {
             perror("talker: socket");
@@ -69,7 +69,7 @@ void* ReceiveThread(void* unused)
         break;
     }
 
-	// Create the socket for UDP
+	//Create the socket for UDP
 	//socketDescriptor = socket(receiveInfo->ai_family, SOCK_DGRAM, receiveInfo->ai_protocol); // this doesnt need?
     //socketDescriptor = socket(PF_INET, SOCK_DGRAM, 0);// this works
 	
@@ -77,7 +77,7 @@ void* ReceiveThread(void* unused)
         printf("socket Error Receive:(%d) \n", socketDescriptor);
     }
 
-	// Bind the socket to the port (PORT) that we specify
+	//Bind the socket to the port (PORT) that we specify
     int bindError = 0;
     bindError = bind(socketDescriptor, (const struct sockaddr*) (receiveInfo->ai_addr) ,(size_t) (receiveInfo->ai_addrlen));
 	if (bindError == -1){
@@ -88,9 +88,9 @@ void* ReceiveThread(void* unused)
     int recvError = 0;
 	while (1) {
         
-		// Get the data (blocking)
-		// Will change sin (the address) to be the address of the client.
-		// Note: sin passes information in and out of call!
+		//Get the data (blocking)
+		//Will change sin (the address) to be the address of the client.
+		//Note: sin passes information in and out of call!
 		struct sockaddr_in sinRemote;
 		unsigned int sin_len = sizeof(sinRemote);
 		static char messageRx[MSG_MAX_LEN];
@@ -102,7 +102,7 @@ void* ReceiveThread(void* unused)
         }
         
         
-        if( !strcmp(messageRx,"\0") ) // check for shutdown (might need tweek)
+        if( !strcmp(messageRx,"\0") ) // heck for shutdown (might need tweek)
         {
             printf("Receive: Shutdown!\n");
             ShutdownSignalMessage();
@@ -112,7 +112,7 @@ void* ReceiveThread(void* unused)
         SetMessageToInputList(messageRx);
         Printer_signalMessage();
 	}
-    // NOTE NEVER EXECUTES BECEAUSE THREAD IS CANCELLED
+    //NOTE NEVER EXECUTES BECEAUSE THREAD IS CANCELLED
 	return NULL;
 }
 
@@ -132,10 +132,10 @@ void ReceiverShutdown(void)
 
     //freeaddrinfo(receiveInfo); // to do
 
-    // Cancel thread
+    //Cancel thread
     pthread_cancel(threadPID);
 
-    // Waits for thread to finish
+    //Waits for thread to finish
     pthread_join(threadPID, NULL);
 
     // Cleanup memory
