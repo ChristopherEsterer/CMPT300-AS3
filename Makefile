@@ -22,3 +22,16 @@ clean:
 
 pull:
 	git pull origin master
+
+CsendCSIL:
+	scp -P24 TestChris cesterer@csil-cpu5.cs.surrey.sfu.ca:~/cmpt300/
+
+GsendCSIL:
+	cp -P24 TestChris gsg27@csil-cpu7.cs.surrey.sfu.ca:~/sfuhome/cmpt-300
+
+runC:
+	./TestChris 22112 csil-cpu5.cs.surrey.sfu.ca 22111
+
+runG:
+	./TestChris 22111 csil-cpu7.cs.surrey.sfu.ca 22112
+
