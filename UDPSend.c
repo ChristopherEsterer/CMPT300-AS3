@@ -1,14 +1,15 @@
 // UDP Reveive module
 // Some code supplied from workshops
 // Coded by Chris Esterer
-#include "ProtectedList.h" // include the protected list module
+
+#include "ProtectedList.h" //include the protected list module
 #include "UDPSend.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <netdb.h>
-#include <string.h>			// for strncmp()
-#include <unistd.h>			// for close()
+#include <string.h>			//for strncmp()
+#include <unistd.h>			//for close()
 #include <pthread.h>
 #include <signal.h>
 
@@ -35,10 +36,10 @@ void* SendThread(void* unused)
     struct addrinfo *sendInfo, *p, hints;
 	//Address
 	
-    memset(&hints, 0, sizeof hints); // make sure the struct is empty
-    hints.ai_family = PF_INET;     // don't care IPv4 or IPv6
-    hints.ai_socktype = SOCK_DGRAM; // TCP stream sockets
-    hints.ai_flags = AI_PASSIVE;     // fill in my IP for me
+    memset(&hints, 0, sizeof hints);    //make sure the struct is empty
+    hints.ai_family = PF_INET;          //don't care IPv4 or IPv6
+    hints.ai_socktype = SOCK_DGRAM;     //TCP stream sockets
+    hints.ai_flags = AI_PASSIVE;        //fill in my IP for me
 
     int addrError = 0;
     if ((addrError = getaddrinfo(addressNumber, portNumber, &hints, &sendInfo)) != 0) {
@@ -48,7 +49,7 @@ void* SendThread(void* unused)
         //exit(1);
     }
 
-    // loop through all the results and make a socket
+    //loop through all the results and make a socket
     for(p = sendInfo; p != NULL; p = p->ai_next) {
         if ((socketDescriptor = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) {
             perror("talker: socket");
@@ -68,16 +69,16 @@ void* SendThread(void* unused)
 
 
 
-	// Create the socket for IPv4 UDP
+	//Create the socket for IPv4 UDP
 	socketDescriptor = socket(PF_INET, SOCK_DGRAM, 0);
 
     
 	while (1) {
 
-        pthread_cond_wait(&s_syncOkToSendCondVar, &s_syncOkToSendMutex); // wait condition. Will get triggered externaly (by keyboard)
+        pthread_cond_wait(&s_syncOkToSendCondVar, &s_syncOkToSendMutex); //wait condition. Will get triggered externaly (by keyboard)
 
         static char* messageTx;
-        messageTx = GetMessageFromOutputList(); // get output message from List
+        messageTx = GetMessageFromOutputList(); //get output message from List
         int sendError = 0;
     
         if ((sendError = sendto(socketDescriptor, messageTx, strlen(messageTx), 0, p->ai_addr, p->ai_addrlen)) == -1) {
@@ -87,7 +88,7 @@ void* SendThread(void* unused)
         }
         
 	}
-    // NOTE NEVER EXECUTES BECEAUSE THREAD IS CANCELLED
+    //NOTE NEVER EXECUTES BECEAUSE THREAD IS CANCELLED
 	return NULL;
 }
 
@@ -99,13 +100,13 @@ void SenderInit(char* addr , char* portNum)
     addressNumber = addr;
     
     pthread_create(
-        &threadPID,         // PID (by pointer)
-        NULL,               // Attributes
-        SendThread,      // Function
+        &threadPID,         //PID (by pointer)
+        NULL,               //Attributes
+        SendThread,         //Function
         NULL);
 }
 
-void SenderSignalMessage(void) // External Signal Call to tell the Sender to send. Protected
+void SenderSignalMessage(void) //External Signal Call to tell the Sender to send. Protected
 {
     pthread_mutex_lock(&s_syncOkToSendMutex);
     {
@@ -119,12 +120,12 @@ void SenderSignalMessage(void) // External Signal Call to tell the Sender to sen
 
 void SenderShutdown(void)
 {
-    // Cancel thread
+    //Cancel thread
     pthread_cancel(threadPID);
 
-    // Waits for thread to finish
+    //Waits for thread to finish
     pthread_join(threadPID, NULL);
 
-    // Cleanup memory
+    //Cleanup memory
  
 }
