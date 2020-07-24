@@ -22,8 +22,8 @@ int main(int argCount, char** args)
 {
 
     senderPort = args[1];
-    receiverPort = args[2];
-    address = args[3];
+    receiverPort = args[3];
+    address = args[2];
 
     InitLists(); // Should be called first.
 
