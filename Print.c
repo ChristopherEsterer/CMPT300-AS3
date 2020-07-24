@@ -1,6 +1,7 @@
 // this will be signaled by the UDPReceive when it has a new message to print.
 // and keep printing as long as something is in the list
 // Code edited by Chris Esterer 301116353. Supplied by Brian Fraiser.
+
 #include <stdio.h> 
 #include <stdlib.h>
 #include <string.h>
@@ -25,15 +26,15 @@ void* PrinterThread(void* unused){
      
         pthread_mutex_lock(&s_syncOkToPrintMutex);
         {
-        pthread_cond_wait(&s_syncOkToPrintCondVar, &s_syncOkToPrintMutex); // this will be signalled by external
+            pthread_cond_wait(&s_syncOkToPrintCondVar, &s_syncOkToPrintMutex); // this will be signalled by external
         }
         pthread_mutex_unlock(&s_syncOkToPrintMutex);
         GetMessageFromInputList2(messageToPrint);
         do{
                 
-                printf("%c", *messageToPrint);
-                messageToPrint++;
-                fflush(stdout);
+            printf("%c", *messageToPrint);
+            messageToPrint++;
+            fflush(stdout);
                 
         }while (*messageToPrint != '\0'); 
 
