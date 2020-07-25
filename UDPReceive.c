@@ -104,7 +104,7 @@ void* ReceiveThread(void* unused)
             printf("recvfrom error \n");
         
         }
-        
+        printf("R: %s",messageRx);
         
         if( !strcmp(messageRx,"\0") ) // heck for shutdown (might need tweek)
         {

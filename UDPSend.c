@@ -120,6 +120,7 @@ void SenderSignalMessage(void) //External Signal Call to tell the Sender to send
 
 void SenderShutdown(void)
 {
+    close(socketDescriptor);
     //Cancel thread
     pthread_cancel(threadPID);
 

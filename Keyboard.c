@@ -19,15 +19,19 @@ pthread_t threadKeyboard;
 void* KeyboardThread(void* unused)
 {   
     char x[1024];
-    do{
-        
-
-            fgets(x,1024,stdin);
-            
-            SetMessageToOutputList(x);
-            SenderSignalMessage(); // signal Sender to send
-    }while( strcmp(x,"!\n"));
     
+   //do{
+
+    while( strcmp(x,"!\n")){
+        
+        fgets(x,1024,stdin);
+            
+        SetMessageToOutputList(x);
+        SenderSignalMessage(); // signal Sender to send
+            
+            
+    }//while( strcmp(x,"!\n"));
+
     ShutdownSignalMessage(); // "!" typed to signal shutdown. signal the main thread to shut the threads down.
     
     return NULL;
