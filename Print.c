@@ -24,22 +24,19 @@ char* messageToPrint;
 void* PrinterThread(void* unused){
     while(1) {
      
+     //wait untill we are signaled from out side to print
         pthread_mutex_lock(&s_syncOkToPrintMutex);
         {
             pthread_cond_wait(&s_syncOkToPrintCondVar, &s_syncOkToPrintMutex); // this will be signalled by external
         }
-        pthread_mutex_unlock(&s_syncOkToPrintMutex);
+        pthread_mutex_unlock(&s_syncOkToPrintMutex);    
         GetMessageFromInputList2(messageToPrint);
-        //do{
-                
-            //printf("%s", messageToPrint);
-            fputs(messageToPrint,stdout);
-            //messageToPrint++;
-            fflush(stdout);
-                
-        //}while (*messageToPrint != '\0'); 
-
         
+        fputs(messageToPrint,stdout); // print call some work better than others.
+
+        fflush(stdout);
+
+    
     }
     return NULL;
 
@@ -70,6 +67,7 @@ void Printer_init()
 
 void PrinterShutdown(void)
 {
+    free(messageToPrint);
     // Cancel thread
     pthread_cancel(threadPrinter);
 

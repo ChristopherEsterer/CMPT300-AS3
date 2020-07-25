@@ -30,10 +30,10 @@ static int socketDescriptor;
 static pthread_cond_t s_syncOkToSendCondVar = PTHREAD_COND_INITIALIZER;
 static pthread_mutex_t s_syncOkToSendMutex = PTHREAD_MUTEX_INITIALIZER;
 
-
+struct addrinfo *sendInfo, *p, hints;
 void* SendThread(void* unused)
 {
-    struct addrinfo *sendInfo, *p, hints;
+    //struct addrinfo *sendInfo, *p, hints;
 	//Address
 	
     memset(&hints, 0, sizeof hints);    //make sure the struct is empty
@@ -66,7 +66,6 @@ void* SendThread(void* unused)
 
 
     freeaddrinfo(sendInfo);
-
 
 
 	//Create the socket for IPv4 UDP
@@ -120,7 +119,10 @@ void SenderSignalMessage(void) //External Signal Call to tell the Sender to send
 
 void SenderShutdown(void)
 {
+    
     close(socketDescriptor);
+    freeaddrinfo(&hints);
+    freeaddrinfo(p);
     //Cancel thread
     pthread_cancel(threadPID);
 

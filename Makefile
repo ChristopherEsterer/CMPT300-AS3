@@ -15,7 +15,7 @@ run: build
 	./demo_conditions
 
 valgrindCT: buildCTest
-	valgrind --leak-check=full ./TestChris
+	valgrind --leak-check=full ./s-talk 27012 10.0.0.168 27011
 
 valgrind: build
 	valgrind --leak-check=full ./demo_conditions	
