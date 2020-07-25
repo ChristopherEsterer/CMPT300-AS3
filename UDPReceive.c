@@ -33,7 +33,7 @@ static int socketDescriptor;
 void* ReceiveThread(void* unused)
 { 
     struct addrinfo *receiveInfo;
-    struct addrinfo *p;
+    //struct addrinfo *p;
     struct addrinfo hints;
 
 	// Address
@@ -47,27 +47,27 @@ void* ReceiveThread(void* unused)
 	sin.sin_port = htons(atoi(portRNumber));        //Host to Network short 
 	
     memset(&hints, 0, sizeof hints);    // make sure the struct is empty
-    hints.ai_family = PF_INET;          // don't care IPv4 or IPv6
+    hints.ai_family = AF_UNSPEC;          // don't care IPv4 or IPv6
     hints.ai_socktype = SOCK_DGRAM;     // TCP stream sockets
     hints.ai_flags = AI_PASSIVE;        // fill in my IP for me
     
     
 
-    if ((addrError = getaddrinfo(addressNumber, portRNumber, &hints, &receiveInfo)) != 0) {
-        
+    //if ((addrError = getaddrinfo(addressNumber, portRNumber, &hints, &receiveInfo)) != 0) {
+    if ((addrError = getaddrinfo(NULL, portRNumber, &hints, &receiveInfo)) != 0) {
         fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(addrError));
         
     }
     
     //loop through all the results and make a socket
-    for(p = receiveInfo; p != NULL; p = p->ai_next) {
-        if ((socketDescriptor = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) {
+   // for(p = receiveInfo; p != NULL; p = p->ai_next) {
+        if ((socketDescriptor = socket(receiveInfo->ai_family, receiveInfo->ai_socktype, receiveInfo->ai_protocol)) == -1) {
             perror("talker: socket");
-            continue;
+            //continue;
         }
 
-        break;
-    }
+        //break;
+    //}
 
 	//Create the socket for UDP
 	//socketDescriptor = socket(receiveInfo->ai_family, SOCK_DGRAM, receiveInfo->ai_protocol); // this doesnt need?
@@ -79,10 +79,13 @@ void* ReceiveThread(void* unused)
 
 	//Bind the socket to the port (PORT) that we specify
     int bindError = 0;
-    bindError = bind(socketDescriptor, (const struct sockaddr*) (receiveInfo->ai_addr) ,(size_t) (receiveInfo->ai_addrlen));
+    bindError = bind(socketDescriptor, (const struct sockaddr*) (receiveInfo->ai_addr) ,(size_t) receiveInfo->ai_addrlen);
+    //bindError = bind(socketDescriptor, p->ai_addr ,p->ai_addrlen);
 	if (bindError == -1){
     printf("Bind Error Receive:(%d) \n", bindError);
-    printf("Port Numb: (%s)\n",receiveInfo->ai_addr->sa_data);
+    //printf("Port Numb: (%s)\n",receiveInfo->ai_canonname);//ai_addr->sa_data);
+    printf("RecInfo =: \n SD: %d \n adrlen %d \n data : %s \n", socketDescriptor, (int) receiveInfo->ai_addrlen, receiveInfo->ai_addr->sa_data );
+    printf("name: %s \n ", receiveInfo->ai_canonname);
     printf("addrInfo : %s : %s \n" , addressNumber , portRNumber );
     }
     int recvError = 0;
@@ -91,10 +94,11 @@ void* ReceiveThread(void* unused)
 		//Get the data (blocking)
 		//Will change sin (the address) to be the address of the client.
 		//Note: sin passes information in and out of call!
-		struct sockaddr_in sinRemote;
-		unsigned int sin_len = sizeof(sinRemote);
+		//struct sockaddr_in sinRemote;
+		unsigned int receiveInfolen = sizeof((struct sockaddr *) &receiveInfo->ai_addr);
 		static char messageRx[MSG_MAX_LEN];
-        recvError = recvfrom(socketDescriptor, messageRx, MSG_MAX_LEN, 0, (struct sockaddr *) &sinRemote, &sin_len);
+        recvError = recvfrom(socketDescriptor, messageRx, MSG_MAX_LEN, 0, (struct sockaddr *) &receiveInfo->ai_addr, &receiveInfolen);
+        //recvError = recv(socketDescriptor, messageRx, MSG_MAX_LEN, 0);
 		if (recvError == -1){
             
             printf("recvfrom error \n");
@@ -133,6 +137,7 @@ void ReceiverShutdown(void)
     //freeaddrinfo(receiveInfo); // to do
 
     //Cancel thread
+    close(socketDescriptor);
     pthread_cancel(threadPID);
 
     //Waits for thread to finish
