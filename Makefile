@@ -5,7 +5,7 @@ CFLAGS = -Wall -g -std=c99 -D _POSIX_C_SOURCE=200809L -Werror
 all: build
 
 build:
-	gcc $(CFLAGS) demo_conditions.c general.c printer.c signaller.c instructorList.o -o demo_conditions -lpthread 
+	gcc $(CFLAGS) instructorList.o UDPReceive.c UDPSend.c Print.c ProtectedList.c Keyboard.c ChrisTestingMain.c -o s-talk -lpthread
 # include instructorList.o to compile the list ADT
 
 buildCTest:
@@ -21,7 +21,7 @@ valgrind: build
 	valgrind --leak-check=full ./demo_conditions	
 
 clean:
-	rm -f demo_conditions
+	rm -f s-talk
 
 pull:
 	git pull origin master

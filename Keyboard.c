@@ -39,9 +39,10 @@ void* KeyboardThread(void* unused)
             
     }while( strcmp(x,"!\n"));
 
-    ShutdownSignalMessage(); // "!" typed to signal shutdown. signal the main thread to shut the threads down.
     
-    free(x);
+    ShutdownSignalMessage(); // "!" typed to signal shutdown. signal the main thread to shut the threads down.
+    KeyboardShutdown();
+    //free(x);
     return NULL;
 }
 void KeyboardInit(void)
@@ -58,7 +59,6 @@ void KeyboardShutdown(void)
 {
     // Cancel thread
     free(x);
-
     pthread_cancel(threadKeyboard);
 
     // Waits for thread to finish
