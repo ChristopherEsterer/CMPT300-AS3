@@ -26,7 +26,9 @@ void* KeyboardThread(void* unused)
     while( strcmp(x,"!\n")){
         
         fgets(x,MSG_MAX_LEN,stdin);
-            
+        
+        strcat(x,"\0");   
+        
         SetMessageToOutputList(x);
         SenderSignalMessage(); // signal Sender to send
             
