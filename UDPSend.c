@@ -80,7 +80,7 @@ void* SendThread(void* unused)
         static char* messageTx;
         messageTx = GetMessageFromOutputList(); //get output message from List
         int sendError = 0;
-    
+        sendError = strlen(messageTx);
         if ((sendError = sendto(socketDescriptor, messageTx, strlen(messageTx), 0, p->ai_addr, p->ai_addrlen)) == -1) {
             printf("sendto error");
     

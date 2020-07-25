@@ -89,6 +89,7 @@ void* ReceiveThread(void* unused)
     printf("addrInfo : %s : %s \n" , addressNumber , portRNumber );
     }
     int recvError = 0;
+
 	while (1) {
         
 		//Get the data (blocking)
@@ -96,17 +97,18 @@ void* ReceiveThread(void* unused)
 		//Note: sin passes information in and out of call!
 		//struct sockaddr_in sinRemote;
 		unsigned int receiveInfolen = sizeof((struct sockaddr *) &receiveInfo->ai_addr);
-		static char messageRx[MSG_MAX_LEN];
+		char messageRx[MSG_MAX_LEN];
         recvError = recvfrom(socketDescriptor, messageRx, MSG_MAX_LEN, 0, (struct sockaddr *) &receiveInfo->ai_addr, &receiveInfolen);
         //recvError = recv(socketDescriptor, messageRx, MSG_MAX_LEN, 0);
 		if (recvError == -1){
             
             printf("recvfrom error \n");
-        
+            ShutdownSignalMessage();
+            return NULL;
         }
 
         
-        if( !strcmp(messageRx,"\0") ) // heck for shutdown (might need tweek)
+        if( !strcmp(messageRx,"!\n") ) // heck for shutdown (might need tweek)
         {
             printf("Receive: Shutdown!\n");
             ShutdownSignalMessage();

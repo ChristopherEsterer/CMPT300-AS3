@@ -30,13 +30,14 @@ void* PrinterThread(void* unused){
         }
         pthread_mutex_unlock(&s_syncOkToPrintMutex);
         GetMessageFromInputList2(messageToPrint);
-        do{
+        //do{
                 
-            printf("%c", *messageToPrint);
-            messageToPrint++;
+            //printf("%s", messageToPrint);
+            fputs(messageToPrint,stdout);
+            //messageToPrint++;
             fflush(stdout);
                 
-        }while (*messageToPrint != '\0'); 
+        //}while (*messageToPrint != '\0'); 
 
         
     }
