@@ -14,17 +14,18 @@
 
 //Defines
 #define DYNAMIC_LEN 128
+#define MSG_MAX_LEN 1024
 pthread_t threadKeyboard;
 
 void* KeyboardThread(void* unused)
 {   
-    char x[1024];
+    char x[MSG_MAX_LEN];
     
    //do{
 
     while( strcmp(x,"!\n")){
         
-        fgets(x,1024,stdin);
+        fgets(x,MSG_MAX_LEN,stdin);
             
         SetMessageToOutputList(x);
         SenderSignalMessage(); // signal Sender to send
