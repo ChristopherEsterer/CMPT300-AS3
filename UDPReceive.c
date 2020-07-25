@@ -29,22 +29,25 @@ char* addressNumber;
 static pthread_t threadPID;
 static int socketDescriptor;
 
+struct addrinfo *receiveInfo;
+struct addrinfo hints;
+//struct sockaddr_in sin;
 
 void* ReceiveThread(void* unused)
 { 
-    struct addrinfo *receiveInfo;
+    
     //struct addrinfo *p;
-    struct addrinfo hints;
+    
 
 	// Address
     int addrError = 0;
-	struct sockaddr_in sin;
+	
 
     //struct addrinfo hints; //no idea ** ?
-	memset(&sin, 0, sizeof(sin));
-	sin.sin_family = AF_INET;                       //Connection may be from network
-	sin.sin_addr.s_addr = htonl(INADDR_ANY);        //Host to Network long
-	sin.sin_port = htons(atoi(portRNumber));        //Host to Network short 
+	//memset(&sin, 0, sizeof(sin));
+	//sin.sin_family = AF_INET;                       //Connection may be from network
+	//.sin_addr.s_addr = htonl(INADDR_ANY);        //Host to Network long
+	//sin.sin_port = htons(atoi(portRNumber));        //Host to Network short 
 	
     memset(&hints, 0, sizeof hints);    // make sure the struct is empty
     hints.ai_family = AF_UNSPEC;          // don't care IPv4 or IPv6
@@ -136,8 +139,9 @@ void ReceiverInit(char* addr, char* portNumb)
 void ReceiverShutdown(void)
 {   
 
-    //freeaddrinfo(receiveInfo); // to do
-
+    freeaddrinfo(receiveInfo); // to do
+    //freeaddrinfo(&hints);
+    //freeaddrinfo(&sin);
     //Cancel thread
     close(socketDescriptor);
     pthread_cancel(threadPID);

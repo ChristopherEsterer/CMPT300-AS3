@@ -94,7 +94,6 @@ void* SendThread(void* unused)
 
 void SenderInit(char* addr , char* portNum)
 {
-
     portNumber = portNum;
     addressNumber = addr;
     
@@ -120,8 +119,11 @@ void SenderSignalMessage(void) //External Signal Call to tell the Sender to send
 void SenderShutdown(void)
 {
     
+
     close(socketDescriptor);
-    freeaddrinfo(&hints);
+    //free(portNumber);
+    //free(addressNumber);
+    //freeaddrinfo(&hints);
     freeaddrinfo(p);
     //Cancel thread
     pthread_cancel(threadPID);

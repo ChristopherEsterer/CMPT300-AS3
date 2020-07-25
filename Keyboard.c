@@ -16,11 +16,12 @@
 #define DYNAMIC_LEN 128
 #define MSG_MAX_LEN 1024
 pthread_t threadKeyboard;
+char* x = NULL;
 
 void* KeyboardThread(void* unused)
 {   
     //char x[MSG_MAX_LEN];
-    char* x = NULL;
+    //char* x = NULL;
    //do{
     size_t length =0;
     //while( strcmp(x,"!\n")){
@@ -40,6 +41,7 @@ void* KeyboardThread(void* unused)
 
     ShutdownSignalMessage(); // "!" typed to signal shutdown. signal the main thread to shut the threads down.
     
+    free(x);
     return NULL;
 }
 void KeyboardInit(void)
@@ -55,6 +57,8 @@ void KeyboardInit(void)
 void KeyboardShutdown(void)
 {
     // Cancel thread
+    free(x);
+
     pthread_cancel(threadKeyboard);
 
     // Waits for thread to finish

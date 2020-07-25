@@ -116,13 +116,13 @@ void ListShutdown(void)
     // Cleanup memory
     pthread_mutex_lock(&INlistLockMutex); //lock Inputlist
     {
-        //free(inputList);
+        List_free(inputList, NULL);
     }
     pthread_mutex_unlock(&INlistLockMutex); //unlock InputList
     
     pthread_mutex_lock(&OUTlistLockMutex); //lock Outputlist
     {
-        //free(outputList);
+        List_free(outputList,NULL);
     }
     pthread_mutex_unlock(&OUTlistLockMutex);//unlock Outputlist
 }
